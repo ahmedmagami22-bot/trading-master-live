@@ -1,23 +1,24 @@
-# Trading Master — Vercel POC
+# Trading Master Live Dashboard V2
 
-نسخة تجريبية آمنة: الواجهة لا تحتوي على API Key. المفتاح يتحط في Vercel Environment Variables باسم:
+نسخة V2 التجريبية من داشبورد XAU/USD.
 
-`TWELVE_DATA_API_KEY`
+## الجديد في V2
+- إضافة فريم M5.
+- تحديث تلقائي كل دقيقة.
+- نقل TradingView تحت الشارت الرئيسي.
+- تحويل مكان TradingView القديم إلى جدول متابعة متعدد الفريمات.
+- إزالة Volume وإضافة BOS وWave Number.
+- إضافة TP1 / TP2 / TP3.
+- إضافة FVG+ / FVG-.
+- إضافة Elliott Wave داخل SMC/Confirmation.
+- تضييق Entry Zone حسب الفريم: M5=3$، M15=5$، H1=8$، H4=12$، D1=15$.
 
-## خطوات الرفع السريعة
+## Environment Variable
+على Vercel أضف:
 
-1. ادخل على https://vercel.com وسجل دخول.
-2. اعمل New Project.
-3. ارفع فولدر المشروع أو ارفعه على GitHub واستورده.
-4. من Settings > Environment Variables أضف:
-   - Name: `TWELVE_DATA_API_KEY`
-   - Value: مفتاح Twelve Data الخاص بك
-5. اعمل Deploy.
-6. افتح الرابط وجرب التحديث.
+```
+TWELVE_DATA_API_KEY=your_key_here
+```
 
-## ملاحظات
-
-- التحديث في الواجهة كل 3 دقائق.
-- السيرفر يستخدم Cache لمدة 120 ثانية لتقليل استهلاك credits.
-- هذه نسخة داخلية للعرض على الشركة، وليست إطلاق عملاء نهائي.
-- قبل إطلاق العملاء أضف Login وحماية وصول ومراقبة للاستهلاك.
+## ملاحظات مهمة
+التحديث كل دقيقة على 5 فريمات يستهلك طلبات كثيرة من Twelve Data، لذلك يفضل استخدام خطة مناسبة قبل الإطلاق للعملاء.

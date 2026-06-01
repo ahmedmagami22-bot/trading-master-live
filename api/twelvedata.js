@@ -29,7 +29,7 @@ export default async function handler(req, res) {
       return res.status(502).json({ status: 'error', message: data.message || 'Twelve Data upstream error' });
     }
 
-    res.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=60');
+    res.setHeader('Cache-Control', 's-maxage=55, stale-while-revalidate=30');
     return res.status(200).json(data);
   } catch (err) {
     return res.status(500).json({ status: 'error', message: err.message || 'Server error' });
