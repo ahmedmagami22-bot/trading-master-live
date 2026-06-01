@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Trading Master Live V2 — XAU/USD</title>
-  <meta name="description" content="Trading Master live dashboard V2 for XAU/USD with secure backend, multi-timeframe analysis, SMC, Elliott Wave, FVG, BOS, TP1/TP2/TP3 and performance tracking." />
+  <title>Trading Master Live — XAU/USD</title>
+  <meta name="description" content="Trading Master live dashboard for XAU/USD with secure backend, multi-timeframe analysis, SMC, Elliott Wave, FVG, BOS, TP1/TP2/TP3 and performance tracking." />
   <link rel="preconnect" href="https://s3.tradingview.com">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -43,8 +43,7 @@
     .chipRow{display:flex;gap:6px;flex-wrap:wrap}.chip{font-size:11px;border-radius:999px;padding:6px 9px;background:#07101e;border:1px solid var(--line);color:var(--muted);font-weight:800}.chip.ok{color:var(--green);border-color:rgba(33,198,168,.35);background:rgba(33,198,168,.08)}.chip.bad{color:var(--red);border-color:rgba(255,91,110,.35);background:rgba(255,91,110,.08)}.chip.warn{color:var(--gold);border-color:rgba(242,183,5,.35);background:rgba(242,183,5,.08)}
     .tvBox{height:440px}.tvBox .tradingview-widget-container,.tvBox iframe{height:100%!important;width:100%!important}.tvUnder{margin-top:14px;border-top:1px solid rgba(255,255,255,.07)}
     .log{padding:12px 14px;color:var(--muted);font-size:12px;line-height:1.7;border-top:1px solid rgba(255,255,255,.07);direction:rtl}.status{font-weight:900}.foot{margin-top:14px;text-align:center;color:var(--muted2);font-size:11px}.warnbox{margin-top:9px;background:rgba(255,91,110,.08);border:1px solid rgba(255,91,110,.22);color:#ffb8c0;border-radius:12px;padding:8px 10px;font-size:11px;line-height:1.6}
-    .perfTable{padding:14px}.tfGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.tfCard{background:#0a1220;border:1px solid var(--line);border-radius:16px;overflow:hidden}.tfTitle{padding:10px;border-bottom:1px solid rgba(255,255,255,.07);font-weight:950;color:#dce7f6;display:flex;justify-content:space-between;gap:8px;align-items:center}.tfTitle span{font-size:12px}.tfTitle b{font-size:11px}.tfRows{padding:8px 10px}.tfRow{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:11px;color:var(--muted);direction:rtl}.tfRow:last-child{border-bottom:none}.tfRow b{direction:ltr;color:var(--txt);font-variant-numeric:tabular-nums}.check{font-weight:950}.disclaimer{padding:10px 14px;color:var(--muted2);font-size:11px;line-height:1.6;border-top:1px solid rgba(255,255,255,.07)}
-    @media(max-width:1280px){.top,.grid{grid-template-columns:1fr}.actions{min-width:0}.chartWrap{height:430px}.tfGrid{grid-template-columns:repeat(2,1fr)}}
+    .perfTable{padding:14px;overflow-x:auto}.tfGrid{min-width:760px}.mtfMatrix{display:grid;grid-template-columns:170px repeat(5,minmax(118px,1fr));border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#07101e}.mtfCell{padding:11px 10px;border-left:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);font-size:12px;min-height:42px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35}.mtfCell.metric{justify-content:flex-start;text-align:right;color:#dbe7f6;background:rgba(255,255,255,.035);font-weight:900}.mtfHead{background:linear-gradient(180deg,rgba(79,140,255,.18),rgba(79,140,255,.06));font-weight:950;color:#fff}.mtfVal{font-weight:900;font-variant-numeric:tabular-nums}.stateNote{display:block;font-size:10px;color:var(--muted);margin-top:4px;font-weight:700}.check{font-size:18px;font-weight:950}.disclaimer{padding:0 14px 14px;color:var(--muted2);font-size:11px;line-height:1.7}@media(max-width:1280px){.top,.grid{grid-template-columns:1fr}.actions{min-width:0}.chartWrap{height:430px}.tfGrid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:760px){body{padding:10px}.brandBox{align-items:flex-start}.logo{width:46px;height:46px}.title h1{font-size:17px}.heroMetrics,.stats,.lists,.signalGrid,.tfGrid{grid-template-columns:1fr}.chartWrap{height:360px}.watermark{font-size:42px}.top{gap:10px}.cardHead{align-items:flex-start;flex-direction:column}.pt{min-width:96px}.tvBox{height:360px}}
   </style>
 </head>
@@ -54,15 +53,15 @@
     <section class="brandBox">
       <div class="logo"><b>TM</b><small>GOLD</small></div>
       <div class="title">
-        <h1>Trading Master Live Dashboard V2 — XAU/USD</h1>
+        <h1>Trading Master Live Dashboard — XAU/USD</h1>
         <p>شارت مباشر + تحليل فني تلقائي + SMC + Elliott Wave + FVG + BOS — Backend آمن بدون إظهار API Key.</p>
-        <div class="intro">بصفتك خبير في التحليل الفني: الهدف من هذه النسخة هو تحسين جودة الإشارات من خلال دمج الاتجاه العام، كسر البنية BOS، الفجوات السعرية FVG، موجات إليوت، وتحديد مناطق دخول ضيقة حسب كل فريم.</div>
+        <div class="intro">الهدف من هذه النسخة هو تحسين جودة الإشارات من خلال دمج الاتجاه العام، كسر البنية BOS، الفجوات السعرية FVG، موجات إليوت، وتحديد مناطق دخول ضيقة حسب كل فريم.</div>
         <div class="livePill"><span class="dot"></span><span id="sourceLabel">Demo Mode</span><span id="clock">--:--:--</span></div>
       </div>
     </section>
     <section class="actions">
-      <div class="keyRow"><div class="backendBadge">Secure Backend Mode — V2 Signal Engine</div><button class="btn" id="refreshNow">Refresh</button></div>
-      <div class="miniActions"><span>نسخة تجريبية للعرض على الشركة — التحديث تلقائي كل دقيقة من Backend يخفي API Key.</span></div>
+      <div class="keyRow"><div class="backendBadge">Secure Backend Mode — Signal Engine</div><button class="btn" id="refreshNow">Refresh</button></div>
+      <div class="miniActions"><span>التحديث تلقائي كل دقيقة من Backend آمن يخفي API Key.</span></div>
       <div class="warnbox">مهم: التحديث كل دقيقة على 5 فريمات قد يستهلك عدد طلبات أعلى من الخطة المجانية. قبل إطلاق العملاء نحتاج Login + مراقبة استهلاك + خطة بيانات مناسبة.</div>
     </section>
   </div>
@@ -150,13 +149,13 @@
       </section>
 
       <section class="card">
-        <div class="cardHead"><div><h2>Multi-Timeframe Signal Table</h2><small>مكان TradingView القديم — متابعة حالة الإشارات لكل فريم.</small></div></div>
+        <div class="cardHead"><div><h2>Multi-Timeframe Signal Table</h2><small>متابعة الإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
         <div class="perfTable"><div class="tfGrid" id="tfGrid"></div></div>
         <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. الجدول تجريبي لحساب نتيجة الإشارة الحالية، وليس سجل صفقات محاسبي نهائي.</div>
       </section>
     </aside>
   </div>
-  <div class="foot">Trading Master • Educational technical dashboard • Not financial advice • V2 Signal Engine</div>
+  <div class="foot">Trading Master • Educational technical dashboard • Not financial advice • Signal Engine</div>
 </div>
 <script>
 const els = id => document.getElementById(id);
@@ -255,41 +254,154 @@ function analyzeData(data, tf){
   const result={tf,data,last,prev,e20:e20.at(-1),e50:e50.at(-1),e200:e200.at(-1),r,a,pv,bos,fvg,ew,bias,sig,score,color,zone,tp1,tp2,tp3,sl,reasons,ind:{e20,e50,e200,rs,pv,fvg}};
   updateTradeState(result); return result;
 }
-function signalKey(x){return `${x.tf}_${x.sig}_${Math.round(x.zone.low*10)}_${Math.round(x.zone.high*10)}`}
+function signalKey(x){
+  if(!x || x.sig==='WAIT') return `${x.tf}_WAIT`;
+  return `${x.tf}_${x.sig}_${Math.round(x.zone.low*10)}_${Math.round(x.zone.high*10)}_${Math.round(x.tp1*10)}_${Math.round(x.sl*10)}`;
+}
+function normalizePeriods(s){
+  const today=new Date().toISOString().slice(0,10), month=today.slice(0,7);
+  if(!s.day || s.day!==today){s.day=today; s.dailyPips=0;}
+  if(!s.month || s.month!==month){s.month=month; s.monthlyPips=0;}
+  return s;
+}
+function addPips(s, amount){
+  const pts = pip(amount);
+  s.dailyPips = (s.dailyPips||0) + pts;
+  s.monthlyPips = (s.monthlyPips||0) + pts;
+}
+function signedTargetPips(sig, entry, target){return sig==='BUY' ? target-entry : entry-target;}
+function createSignalState(x, prev={}){
+  const today=new Date().toISOString().slice(0,10), month=today.slice(0,7);
+  return {
+    key: signalKey(x), sig:x.sig, entryLow:x.zone.low, entryHigh:x.zone.high,
+    entryMid:(x.zone.low+x.zone.high)/2, originalSl:x.sl, sl:x.sl,
+    tp1:x.tp1, tp2:x.tp2, tp3:x.tp3, active:x.sig!=='WAIT', triggered:false,
+    tp1Hit:false,tp2Hit:false,tp3Hit:false, stopped:false, closed:false, slToEntry:false,
+    createdAt:Date.now(), triggeredAt:null, closedAt:null,
+    day:prev.day||today, month:prev.month||month,
+    dailyPips:prev.dailyPips||0, monthlyPips:prev.monthlyPips||0,
+    distance:0, note:'انتظار دخول السعر إلى المنطقة'
+  };
+}
 function updateTradeState(x){
-  const key=x.tf; const today=new Date().toISOString().slice(0,10); const month=today.slice(0,7); let s=tradeState[key];
-  if(!s || s.key!==signalKey(x) || s.stopped || s.tp3 || x.sig==='WAIT'){
-    s={key:signalKey(x),sig:x.sig,entryLow:x.zone.low,entryHigh:x.zone.high,entryMid:(x.zone.low+x.zone.high)/2,sl:x.sl,tp1:x.tp1,tp2:x.tp2,tp3:x.tp3,active:x.sig!=='WAIT',triggered:false,tp1Hit:false,tp2Hit:false,tp3Hit:false,stopped:false,createdAt:Date.now(),day:today,month};
-  }
-  if(s.active){
-    const hitEntry = x.sig==='BUY' ? (x.last.l<=s.entryHigh && x.last.h>=s.entryLow) : (x.last.h>=s.entryLow && x.last.l<=s.entryHigh);
-    if(hitEntry) s.triggered=true;
-    if(s.triggered){
-      if(x.sig==='BUY'){if(x.last.h>=s.tp1)s.tp1Hit=true;if(x.last.h>=s.tp2)s.tp2Hit=true;if(x.last.h>=s.tp3)s.tp3Hit=true;if(x.last.l<=s.sl)s.stopped=true;}
-      if(x.sig==='SELL'){if(x.last.l<=s.tp1)s.tp1Hit=true;if(x.last.l<=s.tp2)s.tp2Hit=true;if(x.last.l<=s.tp3)s.tp3Hit=true;if(x.last.h>=s.sl)s.stopped=true;}
+  const key=x.tf, newKey=signalKey(x); let s=tradeState[key] || {};
+  s=normalizePeriods(s);
+
+  // لو الصفقة مفعّلة، لا نغير منطقة الدخول ولا الاستوب ولا الأهداف مع تحديثات السعر.
+  const locked = s.active && s.triggered && !s.closed && !s.stopped;
+  if(!locked){
+    // بعد إغلاق TP3 أو Stop، لا نعيد نفس الإشارة بنفس المنطقة. ننتظر منطقة/إشارة جديدة.
+    const sameClosedPattern = (s.closed || s.stopped) && s.key===newKey;
+    if(x.sig==='WAIT'){
+      s = {...s, active:false, sig:'WAIT', key:newKey, distance:0, note:'لا توجد إشارة نشطة'};
+    }else if(!sameClosedPattern && (!s.key || s.key!==newKey || s.closed || s.stopped || s.sig==='WAIT')){
+      s = createSignalState(x, s);
     }
   }
-  s.distance = x.sig==='BUY' ? (x.last.c<s.entryLow?x.last.c-s.entryLow:x.last.c>s.entryHigh?x.last.c-s.entryHigh:0) : x.sig==='SELL' ? (x.last.c>s.entryHigh?s.entryHigh-x.last.c:x.last.c<s.entryLow?s.entryLow-x.last.c:0) : 0;
-  const pnlDollars = !s.triggered ? 0 : s.stopped ? (x.sig==='BUY'?s.sl-s.entryMid:s.entryMid-s.sl) : x.sig==='BUY' ? x.last.c-s.entryMid : s.entryMid-x.last.c;
-  s.dailyPips = s.day===today ? pip(pnlDollars) : 0; s.monthlyPips = s.month===month ? pip(pnlDollars) : 0;
+
+  if(s.active && !s.closed && !s.stopped){
+    const high=x.last.h, low=x.last.l, price=x.last.c;
+    const hitEntry = s.sig==='BUY' ? (low<=s.entryHigh && high>=s.entryLow) : (high>=s.entryLow && low<=s.entryHigh);
+    if(hitEntry && !s.triggered){s.triggered=true; s.triggeredAt=Date.now(); s.note='تم تفعيل الإشارة وتثبيت المنطقة والاستوب';}
+
+    if(s.triggered){
+      if(s.sig==='BUY'){
+        if(!s.tp1Hit && high>=s.tp1){s.tp1Hit=true; addPips(s, signedTargetPips(s.sig,s.entryMid,s.tp1));}
+        if(!s.tp2Hit && high>=s.tp2){s.tp2Hit=true; addPips(s, signedTargetPips(s.sig,s.entryMid,s.tp2)); s.sl=s.entryMid; s.slToEntry=true;}
+        if(!s.tp3Hit && high>=s.tp3){s.tp3Hit=true; addPips(s, signedTargetPips(s.sig,s.entryMid,s.tp3)); s.closed=true; s.active=false; s.closedAt=Date.now(); s.note='تم تحقيق TP3 وإغلاق الصفقة بالكامل';}
+        if(!s.closed && low<=s.sl){s.stopped=true; s.active=false; s.closedAt=Date.now(); if(!s.tp2Hit) addPips(s, signedTargetPips(s.sig,s.entryMid,s.sl)); s.note='تم ضرب وقف الخسارة';}
+        s.distance = price - s.entryMid;
+      }else if(s.sig==='SELL'){
+        if(!s.tp1Hit && low<=s.tp1){s.tp1Hit=true; addPips(s, signedTargetPips(s.sig,s.entryMid,s.tp1));}
+        if(!s.tp2Hit && low<=s.tp2){s.tp2Hit=true; addPips(s, signedTargetPips(s.sig,s.entryMid,s.tp2)); s.sl=s.entryMid; s.slToEntry=true;}
+        if(!s.tp3Hit && low<=s.tp3){s.tp3Hit=true; addPips(s, signedTargetPips(s.sig,s.entryMid,s.tp3)); s.closed=true; s.active=false; s.closedAt=Date.now(); s.note='تم تحقيق TP3 وإغلاق الصفقة بالكامل';}
+        if(!s.closed && high>=s.sl){s.stopped=true; s.active=false; s.closedAt=Date.now(); if(!s.tp2Hit) addPips(s, signedTargetPips(s.sig,s.entryMid,s.sl)); s.note='تم ضرب وقف الخسارة';}
+        s.distance = s.entryMid - price;
+      }
+    }else{
+      // قبل التفعيل: قياس البعد عن أقرب حد في منطقة الدخول.
+      if(s.sig==='BUY') s.distance = price<s.entryLow ? price-s.entryLow : price>s.entryHigh ? price-s.entryHigh : 0;
+      else s.distance = price>s.entryHigh ? s.entryHigh-price : price<s.entryLow ? s.entryLow-price : 0;
+    }
+  }
   tradeState[key]=s; saveTradeState();
+}
+function displayStateFor(x){
+  const s=tradeState[x.tf];
+  if(!s || !s.key) return null;
+  const same = s.key===signalKey(x);
+  if((s.triggered && !s.closed && !s.stopped) || same) return s;
+  return null;
 }
 function updateActiveFromResults(){const active=tfResults[INTERVAL]; if(!active)return; candles=active.data; updateUI(active); draw(active.ind); renderTfTable();}
 function updateUI(x){
   const ch=x.last.c-x.prev.c,pct=(ch/x.prev.c)*100;
+  const s=displayStateFor(x);
+  const shownSig = s && (s.triggered || s.closed || s.stopped) ? s.sig : x.sig;
+  const shownColor = shownSig==='BUY'?'var(--green)':shownSig==='SELL'?'var(--red)':'var(--gold)';
+  const isClosedSame = s && s.closed && s.key===signalKey(x);
+  const isStoppedSame = s && s.stopped && s.key===signalKey(x);
+
   els('livePrice').textContent=fmt(x.last.c); els('changeV').textContent=`${ch>=0?'+':''}${ch.toFixed(2)} (${ch>=0?'+':''}${pct.toFixed(2)}%)`; els('changeV').className='chg '+(ch>=0?'green':'red');
   els('biasWord').textContent=x.bias; els('biasWord').style.color=x.color; els('strength').textContent=x.score+'%'; els('strength').style.color=x.color; els('strengthBar').style.width=x.score+'%'; els('strengthBar').style.background=x.sig==='SELL'?'linear-gradient(90deg,var(--red),#ffc2c9)':x.sig==='BUY'?'linear-gradient(90deg,var(--green),#8cffec)':'linear-gradient(90deg,var(--gold),#ffe49a)';
   els('openV').textContent=fmt(x.last.o); els('highV').textContent=fmt(x.last.h); els('lowV').textContent=fmt(x.last.l); els('closeV').textContent=fmt(x.last.c); els('rsiV').textContent=x.r.toFixed(1); els('atrV').textContent=x.a.toFixed(2);
   els('ema20V').textContent=fmt(x.e20); els('ema50V').textContent=fmt(x.e50); els('ema200V').textContent=fmt(x.e200); els('bosV').textContent=x.bos; els('bosV').className=x.bos==='Bullish'?'green':x.bos==='Bearish'?'red':'gold'; els('waveV').textContent=x.ew.mode==='Motive'?`Wave ${x.ew.wave}`:`${x.ew.wave}`;
-  const badge=els('signalBadge'); badge.textContent=x.sig; badge.style.color=x.color; badge.style.borderColor=x.color; badge.style.background=x.sig==='BUY'?'rgba(33,198,168,.12)':x.sig==='SELL'?'rgba(255,91,110,.12)':'rgba(242,183,5,.12)';
-  els('reason').textContent=x.reasons.slice(0,5).join(' • '); els('entryV').textContent=x.sig==='WAIT'?'انتظار إشارة واضحة':`${fmt(x.zone.low)} – ${fmt(x.zone.high)}`; els('tp1V').textContent=fmt(x.tp1); els('tp2V').textContent=fmt(x.tp2); els('tp3V').textContent=fmt(x.tp3); els('slV').textContent=fmt(x.sl);
+  const badge=els('signalBadge');
+  let badgeText = shownSig;
+  if(isClosedSame) badgeText='WAIT';
+  if(isStoppedSame) badgeText='STOP';
+  badge.textContent=badgeText; badge.style.color=isStoppedSame?'var(--red)':shownColor; badge.style.borderColor=isStoppedSame?'var(--red)':shownColor; badge.style.background=shownSig==='BUY'?'rgba(33,198,168,.12)':shownSig==='SELL'?'rgba(255,91,110,.12)':'rgba(242,183,5,.12)';
+
+  if(s && s.triggered && !s.closed && !s.stopped){
+    els('reason').textContent=`${s.note} • البعد الحالي عن نقطة الدخول: ${(s.distance>=0?'+':'')+fmt(s.distance)}$${s.slToEntry?' • تم نقل وقف الخسارة إلى الدخول':''}`;
+    els('entryV').textContent=`${fmt(s.entryLow)} – ${fmt(s.entryHigh)}`; els('tp1V').textContent=fmt(s.tp1); els('tp2V').textContent=fmt(s.tp2); els('tp3V').textContent=fmt(s.tp3); els('slV').textContent=fmt(s.sl);
+  }else if(isClosedSame){
+    els('reason').textContent='تم تحقيق TP3 وإغلاق الصفقة بالكامل — انتظار منطقة دخول جديدة.';
+    els('entryV').textContent='انتظار منطقة جديدة'; els('tp1V').textContent=fmt(s.tp1); els('tp2V').textContent=fmt(s.tp2); els('tp3V').textContent=fmt(s.tp3); els('slV').textContent=fmt(s.sl);
+  }else if(isStoppedSame){
+    els('reason').textContent='تم ضرب وقف الخسارة — انتظار إشارة/منطقة جديدة.';
+    els('entryV').textContent='انتظار منطقة جديدة'; els('tp1V').textContent=fmt(s.tp1); els('tp2V').textContent=fmt(s.tp2); els('tp3V').textContent=fmt(s.tp3); els('slV').textContent=fmt(s.sl);
+  }else{
+    els('reason').textContent=x.reasons.slice(0,5).join(' • '); els('entryV').textContent=x.sig==='WAIT'?'انتظار إشارة واضحة':`${fmt(x.zone.low)} – ${fmt(x.zone.high)}`; els('tp1V').textContent=fmt(x.tp1); els('tp2V').textContent=fmt(x.tp2); els('tp3V').textContent=fmt(x.tp3); els('slV').textContent=fmt(x.sl);
+  }
+
   ['r1','r2','r3','s1','s2','s3'].forEach(k=>els(k).textContent=fmt(x.pv[k])); els('lastUpdate').textContent=` آخر تحديث: ${new Date().toLocaleString('ar-EG')} • الفريم: ${INTERVAL} • Entry Limit: ${ENTRY_LIMIT[INTERVAL]}$`;
   const fvgChip = x.fvg.type==='Positive' ? '<span class="chip ok">FVG+</span>' : x.fvg.type==='Negative' ? '<span class="chip bad">FVG-</span>' : '<span class="chip">No FVG</span>';
   const chips=[];chips.push(`<span class="chip ${x.bos==='Bullish'?'ok':x.bos==='Bearish'?'bad':'warn'}">BOS ${x.bos}</span>`);chips.push(`<span class="chip ${x.sig==='BUY'?'ok':x.sig==='SELL'?'bad':'warn'}">Elliott ${x.ew.mode} ${x.ew.wave}</span>`);chips.push(fvgChip);chips.push(`<span class="chip ${x.e20>x.e50?'ok':'bad'}">${x.e20>x.e50?'EMA Bull Cross':'EMA Bear Cross'}</span>`);chips.push(`<span class="chip ${x.r>55?'ok':x.r<45?'bad':'warn'}">RSI ${x.r.toFixed(1)}</span>`);els('chips').innerHTML=chips.join('');
-  lastSignalText=`Trading Master V2 | XAU/USD | ${INTERVAL}\nSignal: ${x.sig}\nPrice: ${fmt(x.last.c)}\nEntry: ${x.sig==='WAIT'?'WAIT':`${fmt(x.zone.low)} - ${fmt(x.zone.high)}`}\nTP1: ${fmt(x.tp1)}\nTP2: ${fmt(x.tp2)}\nTP3: ${fmt(x.tp3)}\nSL: ${fmt(x.sl)}\nBOS: ${x.bos}\nElliott: ${x.ew.mode} ${x.ew.wave}\nFVG: ${x.fvg.type}\nReason: ${x.reasons.join(' - ')}\n\nEducational use only. Not financial advice.`;
+  const activeEntry = s && (s.triggered || isClosedSame || isStoppedSame) ? `${fmt(s.entryLow)} - ${fmt(s.entryHigh)}` : x.sig==='WAIT'?'WAIT':`${fmt(x.zone.low)} - ${fmt(x.zone.high)}`;
+  lastSignalText=`Trading Master | XAU/USD | ${INTERVAL}\nSignal: ${badgeText}\nPrice: ${fmt(x.last.c)}\nEntry: ${activeEntry}\nTP1: ${fmt(s?.tp1 ?? x.tp1)}\nTP2: ${fmt(s?.tp2 ?? x.tp2)}\nTP3: ${fmt(s?.tp3 ?? x.tp3)}\nSL: ${fmt(s?.sl ?? x.sl)}\nBOS: ${x.bos}\nElliott: ${x.ew.mode} ${x.ew.wave}\nFVG: ${x.fvg.type}\nReason: ${els('reason').textContent}\n\nEducational use only. Not financial advice.`;
 }
 function renderTfTable(){
-  const grid=els('tfGrid'); if(!grid)return; grid.innerHTML=ALL_TF.map(([tf,label])=>{const x=tfResults[tf]; const s=tradeState[tf]||{}; if(!x)return `<div class="tfCard"><div class="tfTitle"><span>${label}</span><b>--</b></div></div>`; const sig=x.sig==='BUY'?'شراء':x.sig==='SELL'?'بيع':'لا توجد'; const sigClass=x.sig==='BUY'?'green':x.sig==='SELL'?'red':'gold'; const yes=v=>`<span class="check ${v?'green':'red'}">${v?'✓':'×'}</span>`; return `<div class="tfCard"><div class="tfTitle"><span>${label}</span><b class="${sigClass}">${sig}</b></div><div class="tfRows"><div class="tfRow"><span>تفعيل الإشارة</span><b class="${sigClass}">${sig}</b></div><div class="tfRow"><span>البعد عن الدخول</span><b>${s.distance!==undefined?(s.distance>=0?'+':'')+fmt(s.distance):'--'}$</b></div><div class="tfRow"><span>TP1</span><b>${yes(s.tp1Hit)}</b></div><div class="tfRow"><span>TP2</span><b>${yes(s.tp2Hit)}</b></div><div class="tfRow"><span>TP3</span><b>${yes(s.tp3Hit)}</b></div><div class="tfRow"><span>Stop</span><b>${yes(s.stopped)}</b></div><div class="tfRow"><span>Daily PIPS</span><b class="${(s.dailyPips||0)>=0?'green':'red'}">${s.dailyPips??0}</b></div><div class="tfRow"><span>Monthly PIPS</span><b class="${(s.monthlyPips||0)>=0?'green':'red'}">${s.monthlyPips??0}</b></div></div></div>`}).join('');
+  const grid=els('tfGrid'); if(!grid)return;
+  const labels=ALL_TF.map(([tf,label])=>label);
+  const cell=(html,cls='')=>`<div class="mtfCell ${cls}">${html}</div>`;
+  const yes=v=>`<span class="check ${v?'green':'red'}">${v?'✓':'×'}</span>`;
+  const sigLabel=(tf)=>{
+    const x=tfResults[tf], s=tradeState[tf]||{};
+    if(!x) return '--';
+    const sig=s.sig&&s.sig!=='WAIT'?s.sig:x.sig;
+    const ar=sig==='BUY'?'شراء':sig==='SELL'?'بيع':'لا توجد';
+    const cls=sig==='BUY'?'green':sig==='SELL'?'red':'gold';
+    let note=s.triggered?'مفعّلة':(sig==='WAIT'?'انتظار':'لم تدخل المنطقة');
+    if(s.closed) note='مغلقة TP3'; if(s.stopped) note='Stop';
+    return `<span class="mtfVal ${cls}">${ar}</span><span class="stateNote">${note}</span>`;
+  };
+  const distance=(tf)=>{const s=tradeState[tf]||{};return s.distance!==undefined?`<span class="mtfVal ${(s.distance||0)>=0?'green':'red'}">${(s.distance>=0?'+':'')+fmt(s.distance)}$</span>`:'--'};
+  const daily=(tf)=>{const s=tradeState[tf]||{};const v=s.dailyPips||0;return `<span class="mtfVal ${v>=0?'green':'red'}">${v}</span>`};
+  const monthly=(tf)=>{const s=tradeState[tf]||{};const v=s.monthlyPips||0;return `<span class="mtfVal ${v>=0?'green':'red'}">${v}</span>`};
+  const row=(name, fn)=>cell(name,'metric')+ALL_TF.map(([tf])=>cell(fn(tf))).join('');
+  let html='<div class="mtfMatrix">';
+  html+=cell('الفريم','metric mtfHead')+labels.map(l=>cell(l,'mtfHead')).join('');
+  html+=row('تم تفعيل الإشارة', sigLabel);
+  html+=row('البعد عن نقطة الدخول', distance);
+  html+=row('تم تحقيق TP1', tf=>yes((tradeState[tf]||{}).tp1Hit));
+  html+=row('تم تحقيق TP2', tf=>yes((tradeState[tf]||{}).tp2Hit));
+  html+=row('تم تحقيق TP3', tf=>yes((tradeState[tf]||{}).tp3Hit));
+  html+=row('تم ضرب الاستوب', tf=>yes((tradeState[tf]||{}).stopped));
+  html+=row('صافي اليوم PIPS', daily);
+  html+=row('صافي الشهر PIPS', monthly);
+  html+='</div>';
+  grid.innerHTML=html;
 }
 function draw(ind={}){
   const canvas=els('chart'),ctx=canvas.getContext('2d'),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);const W=rect.width,H=rect.height;ctx.clearRect(0,0,W,H);ctx.fillStyle='#050912';ctx.fillRect(0,0,W,H);if(!candles.length)return;const data=candles.slice(-110);const extra=[];if(ind.fvg&&ind.fvg.type!=='None')extra.push(ind.fvg.low,ind.fvg.high);const prices=data.flatMap(c=>[c.h,c.l]).concat(extra);const mn=Math.min(...prices),mx=Math.max(...prices);const padL=14,padR=72,padT=20,padB=52,chartW=W-padL-padR,chartH=H-padT-padB;const y=v=>padT+(mx-v)/(mx-mn)*chartH;const x=i=>padL+i*(chartW/(data.length-1));ctx.strokeStyle='rgba(255,255,255,.055)';ctx.lineWidth=1;for(let i=0;i<7;i++){let yy=padT+i*chartH/6;ctx.beginPath();ctx.moveTo(padL,yy);ctx.lineTo(W-padR+44,yy);ctx.stroke()}for(let i=0;i<8;i++){let xx=padL+i*chartW/7;ctx.beginPath();ctx.moveTo(xx,padT);ctx.lineTo(xx,padT+chartH);ctx.stroke()}
