@@ -75,3 +75,10 @@ This version adds:
 - Reduced the empty space on the left side by compacting the signal panel.
 - Reduced TradingView height and compacted Current Trade Snapshot.
 - Kept the full-width multi-timeframe table.
+
+
+## V2.3.5 Full-width TradingView
+- Removed Current Trade Snapshot block.
+- Moved TradingView to a full-width section under the main chart/grid.
+- Reduced empty space on the left by separating TradingView from the side panel.
+- Changed logout to a fixed user-icon button with hover label.

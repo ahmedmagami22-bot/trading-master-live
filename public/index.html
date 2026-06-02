@@ -381,6 +381,93 @@
   .quickGrid{grid-template-columns:1fr!important}
 }
 
+
+/* V2.3.5 full-width TradingView layout */
+.fullTvCard{
+  margin-top:16px!important;
+  overflow:hidden;
+}
+.fullTvCard .tvUnder{
+  margin-top:0!important;
+  border-top:0!important;
+}
+.fullTvCard .cardHead{
+  padding:16px 20px!important;
+  justify-content:space-between!important;
+}
+.fullTvCard .cardHead h2{
+  font-size:22px!important;
+}
+.fullTvCard .tvBox{
+  width:100%!important;
+  height:620px!important;
+  min-height:620px!important;
+}
+.grid{
+  grid-template-columns:minmax(0,1.58fr) minmax(330px,.68fr)!important;
+  align-items:start!important;
+}
+.chartWrap{
+  height:560px!important;
+}
+.side > .card:first-child{
+  min-height:auto!important;
+}
+.quickSignalPanel{display:none!important}
+.logoutBtn{
+  position:fixed!important;
+  width:46px!important;
+  height:46px!important;
+  left:18px!important;
+  bottom:18px!important;
+  top:auto!important;
+  right:auto!important;
+  padding:0!important;
+  border-radius:50%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:linear-gradient(180deg,rgba(79,140,255,.18),rgba(13,20,35,.92))!important;
+  border:1px solid rgba(79,140,255,.45)!important;
+  color:#dbeafe!important;
+  box-shadow:0 14px 35px rgba(0,0,0,.35)!important;
+  z-index:150!important;
+  text-decoration:none!important;
+}
+.logoutBtn .userIcon{
+  display:block!important;
+  font-size:22px!important;
+  line-height:1!important;
+}
+.logoutBtn .logoutText{
+  display:none!important;
+}
+.logoutBtn:hover .logoutText{
+  display:block!important;
+  position:absolute!important;
+  left:56px!important;
+  bottom:6px!important;
+  white-space:nowrap!important;
+  background:#0f172a!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  padding:8px 11px!important;
+  border-radius:10px!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  box-shadow:0 10px 25px rgba(0,0,0,.35)!important;
+}
+@media(max-width:1280px){
+  .grid{grid-template-columns:1fr!important}
+  .chartWrap{height:460px!important}
+  .fullTvCard .tvBox{height:520px!important;min-height:520px!important}
+}
+@media(max-width:760px){
+  .chartWrap{height:370px!important}
+  .fullTvCard .tvBox{height:390px!important;min-height:390px!important}
+  .fullTvCard .cardHead h2{font-size:17px!important}
+}
+
 </style>
 
 <script>
@@ -715,6 +802,93 @@ html:not(.auth-ok) body{visibility:hidden}
   .quickGrid{grid-template-columns:1fr!important}
 }
 
+
+/* V2.3.5 full-width TradingView layout */
+.fullTvCard{
+  margin-top:16px!important;
+  overflow:hidden;
+}
+.fullTvCard .tvUnder{
+  margin-top:0!important;
+  border-top:0!important;
+}
+.fullTvCard .cardHead{
+  padding:16px 20px!important;
+  justify-content:space-between!important;
+}
+.fullTvCard .cardHead h2{
+  font-size:22px!important;
+}
+.fullTvCard .tvBox{
+  width:100%!important;
+  height:620px!important;
+  min-height:620px!important;
+}
+.grid{
+  grid-template-columns:minmax(0,1.58fr) minmax(330px,.68fr)!important;
+  align-items:start!important;
+}
+.chartWrap{
+  height:560px!important;
+}
+.side > .card:first-child{
+  min-height:auto!important;
+}
+.quickSignalPanel{display:none!important}
+.logoutBtn{
+  position:fixed!important;
+  width:46px!important;
+  height:46px!important;
+  left:18px!important;
+  bottom:18px!important;
+  top:auto!important;
+  right:auto!important;
+  padding:0!important;
+  border-radius:50%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:linear-gradient(180deg,rgba(79,140,255,.18),rgba(13,20,35,.92))!important;
+  border:1px solid rgba(79,140,255,.45)!important;
+  color:#dbeafe!important;
+  box-shadow:0 14px 35px rgba(0,0,0,.35)!important;
+  z-index:150!important;
+  text-decoration:none!important;
+}
+.logoutBtn .userIcon{
+  display:block!important;
+  font-size:22px!important;
+  line-height:1!important;
+}
+.logoutBtn .logoutText{
+  display:none!important;
+}
+.logoutBtn:hover .logoutText{
+  display:block!important;
+  position:absolute!important;
+  left:56px!important;
+  bottom:6px!important;
+  white-space:nowrap!important;
+  background:#0f172a!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  padding:8px 11px!important;
+  border-radius:10px!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  box-shadow:0 10px 25px rgba(0,0,0,.35)!important;
+}
+@media(max-width:1280px){
+  .grid{grid-template-columns:1fr!important}
+  .chartWrap{height:460px!important}
+  .fullTvCard .tvBox{height:520px!important;min-height:520px!important}
+}
+@media(max-width:760px){
+  .chartWrap{height:370px!important}
+  .fullTvCard .tvBox{height:390px!important;min-height:390px!important}
+  .fullTvCard .cardHead h2{font-size:17px!important}
+}
+
 </style>
 
 
@@ -1037,6 +1211,93 @@ html:not(.auth-ok) body{visibility:hidden}
   .quickGrid{grid-template-columns:1fr!important}
 }
 
+
+/* V2.3.5 full-width TradingView layout */
+.fullTvCard{
+  margin-top:16px!important;
+  overflow:hidden;
+}
+.fullTvCard .tvUnder{
+  margin-top:0!important;
+  border-top:0!important;
+}
+.fullTvCard .cardHead{
+  padding:16px 20px!important;
+  justify-content:space-between!important;
+}
+.fullTvCard .cardHead h2{
+  font-size:22px!important;
+}
+.fullTvCard .tvBox{
+  width:100%!important;
+  height:620px!important;
+  min-height:620px!important;
+}
+.grid{
+  grid-template-columns:minmax(0,1.58fr) minmax(330px,.68fr)!important;
+  align-items:start!important;
+}
+.chartWrap{
+  height:560px!important;
+}
+.side > .card:first-child{
+  min-height:auto!important;
+}
+.quickSignalPanel{display:none!important}
+.logoutBtn{
+  position:fixed!important;
+  width:46px!important;
+  height:46px!important;
+  left:18px!important;
+  bottom:18px!important;
+  top:auto!important;
+  right:auto!important;
+  padding:0!important;
+  border-radius:50%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:linear-gradient(180deg,rgba(79,140,255,.18),rgba(13,20,35,.92))!important;
+  border:1px solid rgba(79,140,255,.45)!important;
+  color:#dbeafe!important;
+  box-shadow:0 14px 35px rgba(0,0,0,.35)!important;
+  z-index:150!important;
+  text-decoration:none!important;
+}
+.logoutBtn .userIcon{
+  display:block!important;
+  font-size:22px!important;
+  line-height:1!important;
+}
+.logoutBtn .logoutText{
+  display:none!important;
+}
+.logoutBtn:hover .logoutText{
+  display:block!important;
+  position:absolute!important;
+  left:56px!important;
+  bottom:6px!important;
+  white-space:nowrap!important;
+  background:#0f172a!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  padding:8px 11px!important;
+  border-radius:10px!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  box-shadow:0 10px 25px rgba(0,0,0,.35)!important;
+}
+@media(max-width:1280px){
+  .grid{grid-template-columns:1fr!important}
+  .chartWrap{height:460px!important}
+  .fullTvCard .tvBox{height:520px!important;min-height:520px!important}
+}
+@media(max-width:760px){
+  .chartWrap{height:370px!important}
+  .fullTvCard .tvBox{height:390px!important;min-height:390px!important}
+  .fullTvCard .cardHead h2{font-size:17px!important}
+}
+
 </style>
 
 </head>
@@ -1084,41 +1345,6 @@ html:not(.auth-ok) body{visibility:hidden}
         </div>
       </div>
       <div class="log"><span class="status" id="status">جاهز للتشغيل.</span><span id="lastUpdate"> لم يتم التحديث بعد.</span></div>
-      <div class="tvUnder">
-        <div class="cardHead"><h2>TradingView Live — OANDA:XAUUSD</h2></div>
-        <div class="tvBox">
-          <div class="tradingview-widget-container">
-            <div class="tradingview-widget-container__widget"></div>
-            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-            {
-              "autosize": true,
-              "symbol": "OANDA:XAUUSD",
-              "interval": "15",
-              "timezone": "Africa/Cairo",
-              "theme": "dark",
-              "style": "1",
-              "locale": "en",
-              "hide_side_toolbar": false,
-              "allow_symbol_change": true,
-              "calendar": false,
-              "support_host": "https://www.tradingview.com"
-            }
-            </script>
-          </div>
-        </div>
-
-        <div class="quickSignalPanel">
-          <h3>Current Trade Snapshot</h3>
-          <div class="quickGrid">
-            <div class="quickBox"><small>Signal</small><b id="quickSignal">--</b></div>
-            <div class="quickBox"><small>Entry</small><b id="quickEntry">--</b></div>
-            <div class="quickBox"><small>Stop Loss</small><b class="red" id="quickSL">--</b></div>
-            <div class="quickBox"><small>TP1</small><b id="quickTP1">--</b></div>
-            <div class="quickBox"><small>TP2</small><b id="quickTP2">--</b></div>
-            <div class="quickBox"><small>TP3</small><b id="quickTP3">--</b></div>
-          </div>
-        </div>
-      </div>
     </section>
 
     <aside class="side">
@@ -1155,6 +1381,30 @@ html:not(.auth-ok) body{visibility:hidden}
 
     </aside>
   </div>
+  <section class="card fullTvCard">
+      <div class="tvUnder">
+        <div class="cardHead"><h2>TradingView Live — OANDA:XAUUSD</h2></div>
+        <div class="tvBox">
+          <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+            {
+              "autosize": true,
+              "symbol": "OANDA:XAUUSD",
+              "interval": "15",
+              "timezone": "Africa/Cairo",
+              "theme": "dark",
+              "style": "1",
+              "locale": "en",
+              "hide_side_toolbar": false,
+              "allow_symbol_change": true,
+              "calendar": false,
+              "support_host": "https://www.tradingview.com"
+            }
+            </script>
+          </div>
+        </div>
+  </section>
   <section class="card fullTableCard">
 
       <section class="card">
@@ -1446,17 +1696,6 @@ function updateUI(x){
   const activeEntry = s && (s.triggered || isClosedSame || isStoppedSame) ? `${fmt(s.entryLow)} - ${fmt(s.entryHigh)}` : x.sig==='WAIT'?'WAIT':`${fmt(x.zone.low)} - ${fmt(x.zone.high)}`;
   lastSignalText=`Trading Master | XAU/USD | ${INTERVAL}\nSignal: ${badgeText}\nPrice: ${fmt(x.last.c)}\nEntry: ${activeEntry}\nTP1: ${fmt(s?.tp1 ?? x.tp1)}\nTP2: ${fmt(s?.tp2 ?? x.tp2)}\nTP3: ${fmt(s?.tp3 ?? x.tp3)}\nSL: ${fmt(s?.sl ?? x.sl)}\nBOS: ${x.bos}\nElliott: ${x.ew.mode} ${x.ew.wave}\nFVG: ${x.fvg.type}\nReason: ${els('reason').textContent}\n\nEducational use only. Not financial advice.`;
 
-  if(els('quickSignal')){
-    const quickSig = badgeText || x.sig;
-    els('quickSignal').textContent = quickSig;
-    els('quickSignal').className = quickSig==='BUY'?'green':quickSig==='SELL'?'red':'gold';
-    els('quickEntry').textContent = activeEntry;
-    els('quickSL').textContent = fmt(s?.sl ?? x.sl);
-    els('quickTP1').textContent = fmt(s?.tp1 ?? x.tp1);
-    els('quickTP2').textContent = fmt(s?.tp2 ?? x.tp2);
-    els('quickTP3').textContent = fmt(s?.tp3 ?? x.tp3);
-  }
-
 }
 
 function updateChartLabels(x){
@@ -1521,6 +1760,6 @@ function draw(ind={}){
 }
 init();
 </script>
-<a class="logoutBtn" href="/api/logout" title="تسجيل الخروج" aria-label="تسجيل الخروج">⎋<span>تسجيل الخروج</span></a>
+<a class="logoutBtn" href="/api/logout" title="تسجيل الخروج" aria-label="تسجيل الخروج"><span class="userIcon">👤</span><span class="logoutText">تسجيل الخروج</span></a>
 </body>
 </html>
