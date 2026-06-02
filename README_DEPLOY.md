@@ -30,3 +30,17 @@ TWELVE_DATA_API_KEY=your_key_here
 - Backend cache: 60 seconds with stale-while-revalidate to reduce Twelve Data credit usage.
 - Frontend session cache: prevents duplicate requests inside the same minute.
 - TradingView remains live for visual monitoring.
+
+
+## V2.3 Secure Login + UI
+Required Vercel Environment Variables:
+- TWELVE_DATA_API_KEY
+- DASHBOARD_USER
+- DASHBOARD_PASS
+- DASHBOARD_AUTH_TOKEN
+
+This version adds:
+- Login page before opening the dashboard.
+- Protected dashboard with Vercel Middleware.
+- Protected Twelve Data backend endpoint.
+- Improved performance table, summary strip, and trade lifecycle rows.

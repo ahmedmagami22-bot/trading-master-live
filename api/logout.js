@@ -1,0 +1,1 @@
+export default async function handler(req,res){res.setHeader('Set-Cookie','tm_auth=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');return res.redirect('/login.html')}

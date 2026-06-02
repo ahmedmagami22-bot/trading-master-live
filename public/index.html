@@ -45,7 +45,27 @@
     .log{padding:12px 14px;color:var(--muted);font-size:12px;line-height:1.7;border-top:1px solid rgba(255,255,255,.07);direction:rtl}.status{font-weight:900}.foot{margin-top:14px;text-align:center;color:var(--muted2);font-size:11px}.warnbox{margin-top:9px;background:rgba(255,91,110,.08);border:1px solid rgba(255,91,110,.22);color:#ffb8c0;border-radius:12px;padding:8px 10px;font-size:11px;line-height:1.6}
     .perfTable{padding:14px;overflow-x:auto}.tfGrid{min-width:760px}.mtfMatrix{display:grid;grid-template-columns:170px repeat(5,minmax(118px,1fr));border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#07101e}.mtfCell{padding:11px 10px;border-left:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);font-size:12px;min-height:42px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35}.mtfCell.metric{justify-content:flex-start;text-align:right;color:#dbe7f6;background:rgba(255,255,255,.035);font-weight:900}.mtfHead{background:linear-gradient(180deg,rgba(79,140,255,.18),rgba(79,140,255,.06));font-weight:950;color:#fff}.mtfVal{font-weight:900;font-variant-numeric:tabular-nums}.stateNote{display:block;font-size:10px;color:var(--muted);margin-top:4px;font-weight:700}.check{font-size:18px;font-weight:950}.disclaimer{padding:0 14px 14px;color:var(--muted2);font-size:11px;line-height:1.7}@media(max-width:1280px){.top,.grid{grid-template-columns:1fr}.actions{min-width:0}.chartWrap{height:430px}.tfGrid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:760px){body{padding:10px}.brandBox{align-items:flex-start}.logo{width:46px;height:46px}.title h1{font-size:17px}.heroMetrics,.stats,.lists,.signalGrid,.tfGrid{grid-template-columns:1fr}.chartWrap{height:360px}.watermark{font-size:42px}.top{gap:10px}.cardHead{align-items:flex-start;flex-direction:column}.pt{min-width:96px}.tvBox{height:360px}}
-  </style>
+  
+/* V2.3 UI upgrades */
+.summaryStrip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:16px 0 14px}
+.summaryCard{background:linear-gradient(180deg,rgba(24,35,58,.92),rgba(11,18,31,.92));border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:14px;box-shadow:0 12px 30px rgba(0,0,0,.22)}
+.summaryCard .label{font-size:11px;color:var(--muted);margin-bottom:7px}
+.summaryCard .value{font-size:22px;font-weight:900;color:var(--txt);letter-spacing:.2px}
+.summaryCard .value.green{color:var(--green)}.summaryCard .value.red{color:var(--red)}.summaryCard .value.gold{color:var(--gold)}
+.mtfWrap{background:linear-gradient(180deg,rgba(13,20,35,.98),rgba(8,13,24,.98));border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:16px;overflow:auto}
+.mtfMatrix{min-width:980px;gap:0;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.mtfCell{min-height:52px;padding:12px 10px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;border-right:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);background:rgba(7,13,24,.72)}
+.mtfCell.metric{align-items:flex-end;text-align:right;color:#e8eefb;font-weight:900;background:linear-gradient(90deg,rgba(13,28,50,.95),rgba(15,23,39,.95))}
+.mtfCell.mtfHead{min-height:58px;background:linear-gradient(180deg,rgba(22,45,79,.98),rgba(13,24,43,.98));color:#fff;font-size:14px;font-weight:950}
+.mtfVal{font-size:15px;font-weight:950;line-height:1.1}.stateNote{font-size:10px;color:var(--muted);font-weight:800}
+.check{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:950;font-size:16px;background:rgba(255,255,255,.06)}
+.check.green{background:rgba(33,198,168,.14);color:var(--green);border:1px solid rgba(33,198,168,.3)}.check.red{background:rgba(255,91,110,.13);color:var(--red);border:1px solid rgba(255,91,110,.3)}
+.lifecycle{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.lifePill{padding:5px 8px;border-radius:999px;font-size:10px;font-weight:900;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:var(--muted)}
+.lifePill.done{background:rgba(33,198,168,.12);border-color:rgba(33,198,168,.35);color:var(--green)}.lifePill.bad{background:rgba(255,91,110,.12);border-color:rgba(255,91,110,.35);color:var(--red)}
+.chartHint{position:absolute;z-index:5;pointer-events:none;background:rgba(3,8,16,.82);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:6px 8px;font-size:11px;font-weight:900;color:#fff;backdrop-filter:blur(8px)}
+@media(max-width:900px){.summaryStrip{grid-template-columns:repeat(2,minmax(0,1fr))}.summaryCard .value{font-size:18px}}
+
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -150,7 +170,7 @@
 
       <section class="card">
         <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Updates every 15 minutes</h2><small>متابعة الإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
-        <div class="perfTable"><div class="tfGrid" id="tfGrid"></div></div>
+        <div class="perfTable"><div class="summaryStrip" id="summaryStrip"></div><div class="mtfWrap"><div class="tfGrid" id="tfGrid"></div></div></div>
         <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. الجدول تجريبي لحساب نتيجة الإشارة الحالية، وليس سجل صفقات محاسبي نهائي.</div>
       </section>
     </aside>
@@ -435,41 +455,63 @@ function updateUI(x){
   const tableTxt = lastTableUpdate ? lastTableUpdate.toLocaleString('ar-EG') : 'في الانتظار';
   els('lastUpdate').textContent=` آخر تحديث للفريم النشط: ${activeTxt} • آخر تحديث للجدول: ${tableTxt} • الفريم: ${INTERVAL} • Entry Limit: ${ENTRY_LIMIT[INTERVAL]}$`;
   const fvgChip = x.fvg.type==='Positive' ? '<span class="chip ok">FVG+</span>' : x.fvg.type==='Negative' ? '<span class="chip bad">FVG-</span>' : '<span class="chip">No FVG</span>';
-  const chips=[];chips.push(`<span class="chip ${x.bos==='Bullish'?'ok':x.bos==='Bearish'?'bad':'warn'}">BOS ${x.bos}</span>`);chips.push(`<span class="chip ${x.sig==='BUY'?'ok':x.sig==='SELL'?'bad':'warn'}">Elliott ${x.ew.mode} ${x.ew.wave}</span>`);chips.push(fvgChip);chips.push(`<span class="chip ${x.e20>x.e50?'ok':'bad'}">${x.e20>x.e50?'EMA Bull Cross':'EMA Bear Cross'}</span>`);chips.push(`<span class="chip ${x.r>55?'ok':x.r<45?'bad':'warn'}">RSI ${x.r.toFixed(1)}</span>`);els('chips').innerHTML=chips.join('');
+  const chips=[];chips.push(`<span class="chip ${x.bos==='Bullish'?'ok':x.bos==='Bearish'?'bad':'warn'}">BOS ${x.bos}</span>`);chips.push(`<span class="chip ${x.sig==='BUY'?'ok':x.sig==='SELL'?'bad':'warn'}">Elliott ${x.ew.mode} ${x.ew.wave}</span>`);chips.push(fvgChip);chips.push(`<span class="chip ${x.e20>x.e50?'ok':'bad'}">${x.e20>x.e50?'EMA Bull Cross':'EMA Bear Cross'}</span>`);chips.push(`<span class="chip ${x.r>55?'ok':x.r<45?'bad':'warn'}">RSI ${x.r.toFixed(1)}</span>`);els('chips').innerHTML=chips.join(''); updateChartLabels(x);
   const activeEntry = s && (s.triggered || isClosedSame || isStoppedSame) ? `${fmt(s.entryLow)} - ${fmt(s.entryHigh)}` : x.sig==='WAIT'?'WAIT':`${fmt(x.zone.low)} - ${fmt(x.zone.high)}`;
   lastSignalText=`Trading Master | XAU/USD | ${INTERVAL}\nSignal: ${badgeText}\nPrice: ${fmt(x.last.c)}\nEntry: ${activeEntry}\nTP1: ${fmt(s?.tp1 ?? x.tp1)}\nTP2: ${fmt(s?.tp2 ?? x.tp2)}\nTP3: ${fmt(s?.tp3 ?? x.tp3)}\nSL: ${fmt(s?.sl ?? x.sl)}\nBOS: ${x.bos}\nElliott: ${x.ew.mode} ${x.ew.wave}\nFVG: ${x.fvg.type}\nReason: ${els('reason').textContent}\n\nEducational use only. Not financial advice.`;
 }
+
+function updateChartLabels(x){
+  const chart=document.querySelector('.chart')||document.querySelector('.chartBox')||document.querySelector('#chart')?.parentElement;
+  if(!chart||!x)return; chart.style.position=chart.style.position||'relative';
+  chart.querySelectorAll('.chartHint').forEach(n=>n.remove());
+  const s=displayStateFor(x);
+  const entry=s&&(s.triggered||s.closed||s.stopped)?`${fmt(s.entryLow)} - ${fmt(s.entryHigh)}`:(x.sig==='WAIT'?'WAIT':`${fmt(x.zone.low)} - ${fmt(x.zone.high)}`);
+  [['Entry',entry,'12px','18%'],['SL',fmt(s?.sl??x.sl),'12px','30%'],['TP1',fmt(s?.tp1??x.tp1),'12px','42%'],['TP2',fmt(s?.tp2??x.tp2),'12px','54%'],['TP3',fmt(s?.tp3??x.tp3),'12px','66%']].forEach(([k,v,left,top])=>{
+    const d=document.createElement('div');d.className='chartHint';d.style.left=left;d.style.top=top;d.innerHTML=`${k}: <b>${v}</b>`;chart.appendChild(d);
+  });
+}
+
+function renderSummary(){
+  const strip=els('summaryStrip'); if(!strip)return;
+  const states=ALL_TF.map(([tf])=>tradeState[tf]||{});
+  const activeSignals=states.filter(s=>s.active&&s.triggered&&!s.closed&&!s.stopped).length;
+  const waitingSignals=states.filter(s=>s.active&&!s.triggered&&!s.closed&&!s.stopped).length;
+  const tpHits=states.reduce((a,s)=>a+(s.tp1Hit?1:0)+(s.tp2Hit?1:0)+(s.tp3Hit?1:0),0);
+  const daily=states.reduce((a,s)=>a+(s.dailyPips||0),0);
+  const monthly=states.reduce((a,s)=>a+(s.monthlyPips||0),0);
+  const card=(label,value,cls='')=>`<div class="summaryCard"><div class="label">${label}</div><div class="value ${cls}">${value}</div></div>`;
+  strip.innerHTML=[
+    card('الإشارات النشطة',activeSignals,activeSignals?'green':'gold'),
+    card('إشارات تنتظر الدخول',waitingSignals,waitingSignals?'gold':''),
+    card('الأهداف المحققة',tpHits,tpHits?'green':''),
+    card('صافي اليوم PIPS',`${daily>=0?'+':''}${daily}`,daily>=0?'green':'red'),
+    card('صافي الشهر PIPS',`${monthly>=0?'+':''}${monthly}`,monthly>=0?'green':'red')
+  ].join('');
+}
 function renderTfTable(){
   const grid=els('tfGrid'); if(!grid)return;
+  renderSummary();
   const labels=ALL_TF.map(([tf,label])=>label);
   const cell=(html,cls='')=>`<div class="mtfCell ${cls}">${html}</div>`;
   const yes=v=>`<span class="check ${v?'green':'red'}">${v?'✓':'×'}</span>`;
-  const sigLabel=(tf)=>{
-    const x=tfResults[tf], s=tradeState[tf]||{};
-    if(!x) return '--';
-    const sig=s.sig&&s.sig!=='WAIT'?s.sig:x.sig;
-    const ar=sig==='BUY'?'شراء':sig==='SELL'?'بيع':'لا توجد';
-    const cls=sig==='BUY'?'green':sig==='SELL'?'red':'gold';
-    let note=s.triggered?'مفعّلة':(sig==='WAIT'?'انتظار':'لم تدخل المنطقة');
-    if(s.closed) note='مغلقة TP3'; if(s.stopped) note='Stop';
-    return `<span class="mtfVal ${cls}">${ar}</span><span class="stateNote">${note}</span>`;
-  };
-  const distance=(tf)=>{const s=tradeState[tf]||{};return s.distance!==undefined?`<span class="mtfVal ${(s.distance||0)>=0?'green':'red'}">${(s.distance>=0?'+':'')+fmt(s.distance)}$</span>`:'--'};
-  const daily=(tf)=>{const s=tradeState[tf]||{};const v=s.dailyPips||0;return `<span class="mtfVal ${v>=0?'green':'red'}">${v}</span>`};
-  const monthly=(tf)=>{const s=tradeState[tf]||{};const v=s.monthlyPips||0;return `<span class="mtfVal ${v>=0?'green':'red'}">${v}</span>`};
-  const row=(name, fn)=>cell(name,'metric')+ALL_TF.map(([tf])=>cell(fn(tf))).join('');
+  const sigLabel=tf=>{const x=tfResults[tf],s=tradeState[tf]||{};if(!x)return'--';const sig=s.sig&&s.sig!=='WAIT'?s.sig:x.sig;const ar=sig==='BUY'?'شراء':sig==='SELL'?'بيع':'لا توجد';const cls=sig==='BUY'?'green':sig==='SELL'?'red':'gold';let note=s.triggered?'مفعّلة':(sig==='WAIT'?'انتظار':'لم تدخل المنطقة');if(s.closed)note='مغلقة TP3';if(s.stopped)note='Stop';return`<span class="mtfVal ${cls}">${ar}</span><span class="stateNote">${note}</span>`};
+  const distance=tf=>{const s=tradeState[tf]||{};return s.distance!==undefined?`<span class="mtfVal ${(s.distance||0)>=0?'green':'red'}">${(s.distance>=0?'+':'')+fmt(s.distance)}$</span>`:'--'};
+  const daily=tf=>{const s=tradeState[tf]||{},v=s.dailyPips||0;return`<span class="mtfVal ${v>=0?'green':'red'}">${v>=0?'+':''}${v}</span>`};
+  const monthly=tf=>{const s=tradeState[tf]||{},v=s.monthlyPips||0;return`<span class="mtfVal ${v>=0?'green':'red'}">${v>=0?'+':''}${v}</span>`};
+  const lifecycle=tf=>{const s=tradeState[tf]||{};return`<div class="lifecycle"><span class="lifePill ${s.triggered?'done':''}">Entry</span><span class="lifePill ${s.tp1Hit?'done':''}">TP1</span><span class="lifePill ${s.tp2Hit?'done':''}">TP2</span><span class="lifePill ${s.slToEntry?'done':''}">BE</span><span class="lifePill ${s.tp3Hit?'done':''}">TP3</span><span class="lifePill ${s.stopped?'bad':''}">SL</span></div>`};
+  const row=(name,fn)=>cell(name,'metric')+ALL_TF.map(([tf])=>cell(fn(tf))).join('');
   let html='<div class="mtfMatrix">';
   html+=cell('الفريم','metric mtfHead')+labels.map(l=>cell(l,'mtfHead')).join('');
-  html+=row('تم تفعيل الإشارة', sigLabel);
-  html+=row('البعد عن نقطة الدخول', distance);
-  html+=row('تم تحقيق TP1', tf=>yes((tradeState[tf]||{}).tp1Hit));
-  html+=row('تم تحقيق TP2', tf=>yes((tradeState[tf]||{}).tp2Hit));
-  html+=row('تم تحقيق TP3', tf=>yes((tradeState[tf]||{}).tp3Hit));
-  html+=row('تم ضرب الاستوب', tf=>yes((tradeState[tf]||{}).stopped));
-  html+=row('صافي اليوم PIPS', daily);
-  html+=row('صافي الشهر PIPS', monthly);
-  html+='</div>';
-  grid.innerHTML=html;
+  html+=row('حالة الإشارة',sigLabel);
+  html+=row('رحلة الصفقة',lifecycle);
+  html+=row('البعد عن الدخول',distance);
+  html+=row('تحقق TP1',tf=>yes((tradeState[tf]||{}).tp1Hit));
+  html+=row('تحقق TP2',tf=>yes((tradeState[tf]||{}).tp2Hit));
+  html+=row('تحقق TP3',tf=>yes((tradeState[tf]||{}).tp3Hit));
+  html+=row('ضرب الاستوب',tf=>yes((tradeState[tf]||{}).stopped));
+  html+=row('صافي اليوم PIPS',daily);
+  html+=row('صافي الشهر PIPS',monthly);
+  html+='</div>';grid.innerHTML=html;
 }
 function draw(ind={}){
   const canvas=els('chart'),ctx=canvas.getContext('2d'),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);const W=rect.width,H=rect.height;ctx.clearRect(0,0,W,H);ctx.fillStyle='#050912';ctx.fillRect(0,0,W,H);if(!candles.length)return;const data=candles.slice(-110);const extra=[];if(ind.fvg&&ind.fvg.type!=='None')extra.push(ind.fvg.low,ind.fvg.high);const prices=data.flatMap(c=>[c.h,c.l]).concat(extra);const mn=Math.min(...prices),mx=Math.max(...prices);const padL=14,padR=72,padT=20,padB=52,chartW=W-padL-padR,chartH=H-padT-padB;const y=v=>padT+(mx-v)/(mx-mn)*chartH;const x=i=>padL+i*(chartW/(data.length-1));ctx.strokeStyle='rgba(255,255,255,.055)';ctx.lineWidth=1;for(let i=0;i<7;i++){let yy=padT+i*chartH/6;ctx.beginPath();ctx.moveTo(padL,yy);ctx.lineTo(W-padR+44,yy);ctx.stroke()}for(let i=0;i<8;i++){let xx=padL+i*chartW/7;ctx.beginPath();ctx.moveTo(xx,padT);ctx.lineTo(xx,padT+chartH);ctx.stroke()}

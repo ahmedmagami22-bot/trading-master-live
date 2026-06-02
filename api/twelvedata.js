@@ -1,4 +1,10 @@
 export default async function handler(req, res) {
+  const authToken = process.env.DASHBOARD_AUTH_TOKEN;
+  const cookie = req.headers.cookie || '';
+  if (authToken && !cookie.includes(`tm_auth=${authToken}`)) {
+    return res.status(401).json({ status: 'error', message: 'Unauthorized' });
+  }
+
   const apiKey = process.env.TWELVE_DATA_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ status: 'error', message: 'Missing TWELVE_DATA_API_KEY on server' });
