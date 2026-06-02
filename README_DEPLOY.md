@@ -52,3 +52,11 @@ This version adds:
 - Dashboard redirects to `/login.html` if not logged in.
 - Twelve Data API remains protected server-side by the auth cookie.
 - Added Logout button.
+
+
+## V2.3.2 Layout Fix
+- Moved the Multi-Timeframe Signal Table to full-width below the main dashboard grid.
+- Enlarged the performance table and summary cards.
+- Moved chart labels to the right side for better readability.
+- Improved spacing and responsive layout.
+- Login system remains active.

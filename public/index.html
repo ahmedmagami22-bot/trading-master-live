@@ -65,6 +65,38 @@
 .chartHint{position:absolute;z-index:5;pointer-events:none;background:rgba(3,8,16,.82);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:6px 8px;font-size:11px;font-weight:900;color:#fff;backdrop-filter:blur(8px)}
 @media(max-width:900px){.summaryStrip{grid-template-columns:repeat(2,minmax(0,1fr))}.summaryCard .value{font-size:18px}}
 
+
+/* V2.3.2 layout fixes */
+.grid{grid-template-columns:minmax(0,1.65fr) minmax(360px,.75fr);align-items:start}
+.side{display:flex;flex-direction:column;gap:14px}
+.fullTableCard{margin-top:16px;overflow:hidden}
+.fullTableCard .cardHead{text-align:center;justify-content:center}
+.fullTableCard .cardHead h2{font-size:22px}
+.fullTableCard .cardHead small{font-size:13px}
+.fullTableCard .perfTable{padding:18px}
+.fullTableCard .summaryStrip{grid-template-columns:repeat(5,minmax(150px,1fr));margin:4px 0 18px}
+.fullTableCard .summaryCard{min-height:92px;display:flex;flex-direction:column;justify-content:center}
+.fullTableCard .summaryCard .label{font-size:12px}
+.fullTableCard .summaryCard .value{font-size:25px}
+.fullTableCard .mtfWrap{padding:18px;overflow-x:auto}
+.fullTableCard .mtfMatrix{min-width:1180px;grid-template-columns:190px repeat(5,minmax(165px,1fr))}
+.fullTableCard .mtfCell{min-height:62px;font-size:13px}
+.fullTableCard .mtfCell.mtfHead{min-height:66px;font-size:15px}
+.fullTableCard .mtfVal{font-size:17px}
+.fullTableCard .stateNote{font-size:11px}
+.fullTableCard .disclaimer{text-align:center;padding:0 18px 18px;font-size:12px}
+.chartHint{left:auto!important;right:14px!important;min-width:145px;text-align:left;direction:ltr}
+.logoutBtn{top:18px;bottom:auto}
+@media(max-width:1280px){
+  .grid{grid-template-columns:1fr}
+  .fullTableCard .summaryStrip{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .fullTableCard .summaryStrip{grid-template-columns:1fr}
+  .fullTableCard .perfTable{padding:12px}
+  .fullTableCard .mtfWrap{padding:10px}
+}
+
 </style>
 
 <script>
@@ -83,12 +115,76 @@
 </script>
 <style>
 html:not(.auth-ok) body{visibility:hidden}
+
+/* V2.3.2 layout fixes */
+.grid{grid-template-columns:minmax(0,1.65fr) minmax(360px,.75fr);align-items:start}
+.side{display:flex;flex-direction:column;gap:14px}
+.fullTableCard{margin-top:16px;overflow:hidden}
+.fullTableCard .cardHead{text-align:center;justify-content:center}
+.fullTableCard .cardHead h2{font-size:22px}
+.fullTableCard .cardHead small{font-size:13px}
+.fullTableCard .perfTable{padding:18px}
+.fullTableCard .summaryStrip{grid-template-columns:repeat(5,minmax(150px,1fr));margin:4px 0 18px}
+.fullTableCard .summaryCard{min-height:92px;display:flex;flex-direction:column;justify-content:center}
+.fullTableCard .summaryCard .label{font-size:12px}
+.fullTableCard .summaryCard .value{font-size:25px}
+.fullTableCard .mtfWrap{padding:18px;overflow-x:auto}
+.fullTableCard .mtfMatrix{min-width:1180px;grid-template-columns:190px repeat(5,minmax(165px,1fr))}
+.fullTableCard .mtfCell{min-height:62px;font-size:13px}
+.fullTableCard .mtfCell.mtfHead{min-height:66px;font-size:15px}
+.fullTableCard .mtfVal{font-size:17px}
+.fullTableCard .stateNote{font-size:11px}
+.fullTableCard .disclaimer{text-align:center;padding:0 18px 18px;font-size:12px}
+.chartHint{left:auto!important;right:14px!important;min-width:145px;text-align:left;direction:ltr}
+.logoutBtn{top:18px;bottom:auto}
+@media(max-width:1280px){
+  .grid{grid-template-columns:1fr}
+  .fullTableCard .summaryStrip{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .fullTableCard .summaryStrip{grid-template-columns:1fr}
+  .fullTableCard .perfTable{padding:12px}
+  .fullTableCard .mtfWrap{padding:10px}
+}
+
 </style>
 
 
 <style>
 .logoutBtn{position:fixed;left:18px;bottom:18px;z-index:99;background:rgba(255,91,110,.13);border:1px solid rgba(255,91,110,.35);color:#ff5b6e;border-radius:999px;padding:10px 14px;font-weight:900;text-decoration:none;font-size:12px;backdrop-filter:blur(10px)}
 .logoutBtn:hover{background:rgba(255,91,110,.22)}
+
+/* V2.3.2 layout fixes */
+.grid{grid-template-columns:minmax(0,1.65fr) minmax(360px,.75fr);align-items:start}
+.side{display:flex;flex-direction:column;gap:14px}
+.fullTableCard{margin-top:16px;overflow:hidden}
+.fullTableCard .cardHead{text-align:center;justify-content:center}
+.fullTableCard .cardHead h2{font-size:22px}
+.fullTableCard .cardHead small{font-size:13px}
+.fullTableCard .perfTable{padding:18px}
+.fullTableCard .summaryStrip{grid-template-columns:repeat(5,minmax(150px,1fr));margin:4px 0 18px}
+.fullTableCard .summaryCard{min-height:92px;display:flex;flex-direction:column;justify-content:center}
+.fullTableCard .summaryCard .label{font-size:12px}
+.fullTableCard .summaryCard .value{font-size:25px}
+.fullTableCard .mtfWrap{padding:18px;overflow-x:auto}
+.fullTableCard .mtfMatrix{min-width:1180px;grid-template-columns:190px repeat(5,minmax(165px,1fr))}
+.fullTableCard .mtfCell{min-height:62px;font-size:13px}
+.fullTableCard .mtfCell.mtfHead{min-height:66px;font-size:15px}
+.fullTableCard .mtfVal{font-size:17px}
+.fullTableCard .stateNote{font-size:11px}
+.fullTableCard .disclaimer{text-align:center;padding:0 18px 18px;font-size:12px}
+.chartHint{left:auto!important;right:14px!important;min-width:145px;text-align:left;direction:ltr}
+.logoutBtn{top:18px;bottom:auto}
+@media(max-width:1280px){
+  .grid{grid-template-columns:1fr}
+  .fullTableCard .summaryStrip{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .fullTableCard .summaryStrip{grid-template-columns:1fr}
+  .fullTableCard .perfTable{padding:12px}
+  .fullTableCard .mtfWrap{padding:10px}
+}
+
 </style>
 
 </head>
@@ -193,13 +289,15 @@ html:not(.auth-ok) body{visibility:hidden}
         <div class="miniCard" style="margin:0 14px 14px"><h3>SMC / Confirmation</h3><div class="chipRow" id="chips"><span class="chip">Waiting</span></div></div>
       </section>
 
+    </aside>
+  </div>
+  <section class="card fullTableCard">
+
       <section class="card">
         <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Updates every 15 minutes</h2><small>متابعة الإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
         <div class="perfTable"><div class="summaryStrip" id="summaryStrip"></div><div class="mtfWrap"><div class="tfGrid" id="tfGrid"></div></div></div>
         <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. الجدول تجريبي لحساب نتيجة الإشارة الحالية، وليس سجل صفقات محاسبي نهائي.</div>
-      </section>
-    </aside>
-  </div>
+  </section>
   <div class="foot">Trading Master • Educational technical dashboard • Not financial advice • Signal Engine</div>
 </div>
 <script>
@@ -491,7 +589,7 @@ function updateChartLabels(x){
   chart.querySelectorAll('.chartHint').forEach(n=>n.remove());
   const s=displayStateFor(x);
   const entry=s&&(s.triggered||s.closed||s.stopped)?`${fmt(s.entryLow)} - ${fmt(s.entryHigh)}`:(x.sig==='WAIT'?'WAIT':`${fmt(x.zone.low)} - ${fmt(x.zone.high)}`);
-  [['Entry',entry,'12px','18%'],['SL',fmt(s?.sl??x.sl),'12px','30%'],['TP1',fmt(s?.tp1??x.tp1),'12px','42%'],['TP2',fmt(s?.tp2??x.tp2),'12px','54%'],['TP3',fmt(s?.tp3??x.tp3),'12px','66%']].forEach(([k,v,left,top])=>{
+  [['Entry',entry,'auto','16%'],['SL',fmt(s?.sl??x.sl),'auto','28%'],['TP1',fmt(s?.tp1??x.tp1),'auto','40%'],['TP2',fmt(s?.tp2??x.tp2),'auto','52%'],['TP3',fmt(s?.tp3??x.tp3),'auto','64%']].forEach(([k,v,left,top])=>{
     const d=document.createElement('div');d.className='chartHint';d.style.left=left;d.style.top=top;d.innerHTML=`${k}: <b>${v}</b>`;chart.appendChild(d);
   });
 }
@@ -547,6 +645,6 @@ function draw(ind={}){
 }
 init();
 </script>
-<a class="logoutBtn" href="/api/logout">Logout</a>
+<a class="logoutBtn" href="/api/logout">تسجيل خروج</a>
 </body>
 </html>
