@@ -43,7 +43,7 @@
     .chipRow{display:flex;gap:6px;flex-wrap:wrap}.chip{font-size:11px;border-radius:999px;padding:6px 9px;background:#07101e;border:1px solid var(--line);color:var(--muted);font-weight:800}.chip.ok{color:var(--green);border-color:rgba(33,198,168,.35);background:rgba(33,198,168,.08)}.chip.bad{color:var(--red);border-color:rgba(255,91,110,.35);background:rgba(255,91,110,.08)}.chip.warn{color:var(--gold);border-color:rgba(242,183,5,.35);background:rgba(242,183,5,.08)}
     .tvBox{height:440px}.tvBox .tradingview-widget-container,.tvBox iframe{height:100%!important;width:100%!important}.tvUnder{margin-top:14px;border-top:1px solid rgba(255,255,255,.07)}
     .log{padding:12px 14px;color:var(--muted);font-size:12px;line-height:1.7;border-top:1px solid rgba(255,255,255,.07);direction:rtl}.status{font-weight:900}.foot{margin-top:14px;text-align:center;color:var(--muted2);font-size:11px}.warnbox{margin-top:9px;background:rgba(255,91,110,.08);border:1px solid rgba(255,91,110,.22);color:#ffb8c0;border-radius:12px;padding:8px 10px;font-size:11px;line-height:1.6}
-    .perfTable{padding:14px;overflow-x:auto}.tfGrid{min-width:760px}.mtfMatrix{display:grid;grid-template-columns:170px repeat(5,minmax(118px,1fr));border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#07101e}.mtfCell{padding:11px 10px;border-left:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);font-size:12px;min-height:42px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35}.mtfCell.metric{justify-content:flex-start;text-align:right;color:#dbe7f6;background:rgba(255,255,255,.035);font-weight:900}.mtfHead{background:linear-gradient(180deg,rgba(79,140,255,.18),rgba(79,140,255,.06));font-weight:950;color:#fff}.mtfVal{font-weight:900;font-variant-numeric:tabular-nums}.stateNote{display:block;font-size:10px;color:var(--muted);margin-top:4px;font-weight:700}.check{font-size:18px;font-weight:950}.disclaimer{padding:0 14px 14px;color:var(--muted2);font-size:11px;line-height:1.7}@media(max-width:1280px){.top,.grid{grid-template-columns:1fr}.actions{min-width:0}.chartWrap{height:430px}.tfGrid{grid-template-columns:repeat(2,1fr)}}
+    .perfTable{padding:14px;overflow-x:auto}.tfGrid{min-width:760px}.mtfMatrix{display:grid;grid-template-columns:170px repeat(5,minmax(118px,1fr));border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#07101e}.mtfCell{padding:11px 10px;border-left:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);font-size:12px;min-height:42px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35}.mtfCell.metric{justify-content:center;text-align:center;color:#dbe7f6;background:rgba(255,255,255,.035);font-weight:900}.mtfHead{background:linear-gradient(180deg,rgba(79,140,255,.18),rgba(79,140,255,.06));font-weight:950;color:#fff}.mtfVal{font-weight:900;font-variant-numeric:tabular-nums}.stateNote{display:block;font-size:10px;color:var(--muted);margin-top:4px;font-weight:700}.check{font-size:18px;font-weight:950}.disclaimer{padding:0 14px 14px;color:var(--muted2);font-size:11px;line-height:1.7}@media(max-width:1280px){.top,.grid{grid-template-columns:1fr}.actions{min-width:0}.chartWrap{height:430px}.tfGrid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:760px){body{padding:10px}.brandBox{align-items:flex-start}.logo{width:46px;height:46px}.title h1{font-size:17px}.heroMetrics,.stats,.lists,.signalGrid,.tfGrid{grid-template-columns:1fr}.chartWrap{height:360px}.watermark{font-size:42px}.top{gap:10px}.cardHead{align-items:flex-start;flex-direction:column}.pt{min-width:96px}.tvBox{height:360px}}
   
 /* V2.3 UI upgrades */
@@ -97,6 +97,133 @@
   .fullTableCard .mtfWrap{padding:10px}
 }
 
+
+/* V2.3.3 refined layout */
+.logoutBtn{
+  top:auto!important;
+  bottom:22px!important;
+  left:22px!important;
+  right:auto!important;
+  z-index:120!important;
+  background:linear-gradient(180deg,rgba(255,91,110,.16),rgba(255,91,110,.09))!important;
+  border:1px solid rgba(255,91,110,.42)!important;
+  box-shadow:0 12px 34px rgba(0,0,0,.28);
+}
+.side{height:100%}
+.side > .card:first-child{
+  min-height:760px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.side > .card:first-child .miniCard:last-child{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.side > .card:first-child .chipRow{
+  justify-content:center;
+  gap:10px;
+}
+.side > .card:first-child .chip{
+  padding:8px 11px;
+  font-size:11px;
+}
+.signal{
+  padding:18px 16px;
+}
+.signalBox{
+  min-height:190px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.heroMetrics{
+  padding:18px!important;
+}
+.stats{
+  padding:0 18px 18px!important;
+}
+.lists{
+  padding:0 18px 18px!important;
+}
+.fullTableCard .mtfCell{
+  align-items:center;
+  text-align:center;
+}
+.fullTableCard .mtfCell.metric{
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  direction:rtl;
+}
+.fullTableCard .mtfCell.metric.mtfHead{
+  align-items:center!important;
+  justify-content:center!important;
+}
+.fullTableCard .mtfMatrix{
+  grid-template-columns:190px repeat(5,minmax(170px,1fr));
+}
+.fullTableCard .summaryStrip{
+  direction:rtl;
+}
+.fullTableCard .summaryCard{
+  text-align:center;
+}
+.tvUnder .cardHead{
+  padding:14px 18px;
+}
+.tvUnder .cardHead .tabs{
+  display:none;
+}
+.tvBox{
+  min-height:520px;
+}
+.quickSignalPanel{
+  margin-top:14px;
+  background:linear-gradient(180deg,rgba(13,20,35,.98),rgba(8,13,24,.98));
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:18px;
+  padding:14px;
+}
+.quickSignalPanel h3{
+  font-size:14px;
+  color:#fff;
+  margin-bottom:12px;
+  text-align:center;
+}
+.quickGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.quickBox{
+  background:#0a1220;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+  text-align:center;
+}
+.quickBox small{
+  color:var(--muted2);
+  font-size:10px;
+  display:block;
+  margin-bottom:8px;
+}
+.quickBox b{
+  font-size:15px;
+  font-variant-numeric:tabular-nums;
+}
+@media(max-width:1280px){
+  .side > .card:first-child{min-height:unset}
+  .tvBox{min-height:430px}
+}
+@media(max-width:760px){
+  .logoutBtn{bottom:14px!important;left:14px!important;padding:9px 12px!important}
+  .quickGrid{grid-template-columns:1fr}
+}
+
 </style>
 
 <script>
@@ -147,6 +274,133 @@ html:not(.auth-ok) body{visibility:hidden}
   .fullTableCard .mtfWrap{padding:10px}
 }
 
+
+/* V2.3.3 refined layout */
+.logoutBtn{
+  top:auto!important;
+  bottom:22px!important;
+  left:22px!important;
+  right:auto!important;
+  z-index:120!important;
+  background:linear-gradient(180deg,rgba(255,91,110,.16),rgba(255,91,110,.09))!important;
+  border:1px solid rgba(255,91,110,.42)!important;
+  box-shadow:0 12px 34px rgba(0,0,0,.28);
+}
+.side{height:100%}
+.side > .card:first-child{
+  min-height:760px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.side > .card:first-child .miniCard:last-child{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.side > .card:first-child .chipRow{
+  justify-content:center;
+  gap:10px;
+}
+.side > .card:first-child .chip{
+  padding:8px 11px;
+  font-size:11px;
+}
+.signal{
+  padding:18px 16px;
+}
+.signalBox{
+  min-height:190px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.heroMetrics{
+  padding:18px!important;
+}
+.stats{
+  padding:0 18px 18px!important;
+}
+.lists{
+  padding:0 18px 18px!important;
+}
+.fullTableCard .mtfCell{
+  align-items:center;
+  text-align:center;
+}
+.fullTableCard .mtfCell.metric{
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  direction:rtl;
+}
+.fullTableCard .mtfCell.metric.mtfHead{
+  align-items:center!important;
+  justify-content:center!important;
+}
+.fullTableCard .mtfMatrix{
+  grid-template-columns:190px repeat(5,minmax(170px,1fr));
+}
+.fullTableCard .summaryStrip{
+  direction:rtl;
+}
+.fullTableCard .summaryCard{
+  text-align:center;
+}
+.tvUnder .cardHead{
+  padding:14px 18px;
+}
+.tvUnder .cardHead .tabs{
+  display:none;
+}
+.tvBox{
+  min-height:520px;
+}
+.quickSignalPanel{
+  margin-top:14px;
+  background:linear-gradient(180deg,rgba(13,20,35,.98),rgba(8,13,24,.98));
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:18px;
+  padding:14px;
+}
+.quickSignalPanel h3{
+  font-size:14px;
+  color:#fff;
+  margin-bottom:12px;
+  text-align:center;
+}
+.quickGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.quickBox{
+  background:#0a1220;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+  text-align:center;
+}
+.quickBox small{
+  color:var(--muted2);
+  font-size:10px;
+  display:block;
+  margin-bottom:8px;
+}
+.quickBox b{
+  font-size:15px;
+  font-variant-numeric:tabular-nums;
+}
+@media(max-width:1280px){
+  .side > .card:first-child{min-height:unset}
+  .tvBox{min-height:430px}
+}
+@media(max-width:760px){
+  .logoutBtn{bottom:14px!important;left:14px!important;padding:9px 12px!important}
+  .quickGrid{grid-template-columns:1fr}
+}
+
 </style>
 
 
@@ -183,6 +437,133 @@ html:not(.auth-ok) body{visibility:hidden}
   .fullTableCard .summaryStrip{grid-template-columns:1fr}
   .fullTableCard .perfTable{padding:12px}
   .fullTableCard .mtfWrap{padding:10px}
+}
+
+
+/* V2.3.3 refined layout */
+.logoutBtn{
+  top:auto!important;
+  bottom:22px!important;
+  left:22px!important;
+  right:auto!important;
+  z-index:120!important;
+  background:linear-gradient(180deg,rgba(255,91,110,.16),rgba(255,91,110,.09))!important;
+  border:1px solid rgba(255,91,110,.42)!important;
+  box-shadow:0 12px 34px rgba(0,0,0,.28);
+}
+.side{height:100%}
+.side > .card:first-child{
+  min-height:760px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.side > .card:first-child .miniCard:last-child{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.side > .card:first-child .chipRow{
+  justify-content:center;
+  gap:10px;
+}
+.side > .card:first-child .chip{
+  padding:8px 11px;
+  font-size:11px;
+}
+.signal{
+  padding:18px 16px;
+}
+.signalBox{
+  min-height:190px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.heroMetrics{
+  padding:18px!important;
+}
+.stats{
+  padding:0 18px 18px!important;
+}
+.lists{
+  padding:0 18px 18px!important;
+}
+.fullTableCard .mtfCell{
+  align-items:center;
+  text-align:center;
+}
+.fullTableCard .mtfCell.metric{
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  direction:rtl;
+}
+.fullTableCard .mtfCell.metric.mtfHead{
+  align-items:center!important;
+  justify-content:center!important;
+}
+.fullTableCard .mtfMatrix{
+  grid-template-columns:190px repeat(5,minmax(170px,1fr));
+}
+.fullTableCard .summaryStrip{
+  direction:rtl;
+}
+.fullTableCard .summaryCard{
+  text-align:center;
+}
+.tvUnder .cardHead{
+  padding:14px 18px;
+}
+.tvUnder .cardHead .tabs{
+  display:none;
+}
+.tvBox{
+  min-height:520px;
+}
+.quickSignalPanel{
+  margin-top:14px;
+  background:linear-gradient(180deg,rgba(13,20,35,.98),rgba(8,13,24,.98));
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:18px;
+  padding:14px;
+}
+.quickSignalPanel h3{
+  font-size:14px;
+  color:#fff;
+  margin-bottom:12px;
+  text-align:center;
+}
+.quickGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.quickBox{
+  background:#0a1220;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+  text-align:center;
+}
+.quickBox small{
+  color:var(--muted2);
+  font-size:10px;
+  display:block;
+  margin-bottom:8px;
+}
+.quickBox b{
+  font-size:15px;
+  font-variant-numeric:tabular-nums;
+}
+@media(max-width:1280px){
+  .side > .card:first-child{min-height:unset}
+  .tvBox{min-height:430px}
+}
+@media(max-width:760px){
+  .logoutBtn{bottom:14px!important;left:14px!important;padding:9px 12px!important}
+  .quickGrid{grid-template-columns:1fr}
 }
 
 </style>
@@ -233,7 +614,7 @@ html:not(.auth-ok) body{visibility:hidden}
       </div>
       <div class="log"><span class="status" id="status">جاهز للتشغيل.</span><span id="lastUpdate"> لم يتم التحديث بعد.</span></div>
       <div class="tvUnder">
-        <div class="cardHead"><h2>TradingView Live — OANDA:XAUUSD</h2><div class="tabs"><button class="tab on">Moved under chart</button></div></div>
+        <div class="cardHead"><h2>TradingView Live — OANDA:XAUUSD</h2></div>
         <div class="tvBox">
           <div class="tradingview-widget-container">
             <div class="tradingview-widget-container__widget"></div>
@@ -252,6 +633,18 @@ html:not(.auth-ok) body{visibility:hidden}
               "support_host": "https://www.tradingview.com"
             }
             </script>
+          </div>
+        </div>
+
+        <div class="quickSignalPanel">
+          <h3>Current Trade Snapshot</h3>
+          <div class="quickGrid">
+            <div class="quickBox"><small>Signal</small><b id="quickSignal">--</b></div>
+            <div class="quickBox"><small>Entry</small><b id="quickEntry">--</b></div>
+            <div class="quickBox"><small>Stop Loss</small><b class="red" id="quickSL">--</b></div>
+            <div class="quickBox"><small>TP1</small><b id="quickTP1">--</b></div>
+            <div class="quickBox"><small>TP2</small><b id="quickTP2">--</b></div>
+            <div class="quickBox"><small>TP3</small><b id="quickTP3">--</b></div>
           </div>
         </div>
       </div>
@@ -581,6 +974,18 @@ function updateUI(x){
   const chips=[];chips.push(`<span class="chip ${x.bos==='Bullish'?'ok':x.bos==='Bearish'?'bad':'warn'}">BOS ${x.bos}</span>`);chips.push(`<span class="chip ${x.sig==='BUY'?'ok':x.sig==='SELL'?'bad':'warn'}">Elliott ${x.ew.mode} ${x.ew.wave}</span>`);chips.push(fvgChip);chips.push(`<span class="chip ${x.e20>x.e50?'ok':'bad'}">${x.e20>x.e50?'EMA Bull Cross':'EMA Bear Cross'}</span>`);chips.push(`<span class="chip ${x.r>55?'ok':x.r<45?'bad':'warn'}">RSI ${x.r.toFixed(1)}</span>`);els('chips').innerHTML=chips.join(''); updateChartLabels(x);
   const activeEntry = s && (s.triggered || isClosedSame || isStoppedSame) ? `${fmt(s.entryLow)} - ${fmt(s.entryHigh)}` : x.sig==='WAIT'?'WAIT':`${fmt(x.zone.low)} - ${fmt(x.zone.high)}`;
   lastSignalText=`Trading Master | XAU/USD | ${INTERVAL}\nSignal: ${badgeText}\nPrice: ${fmt(x.last.c)}\nEntry: ${activeEntry}\nTP1: ${fmt(s?.tp1 ?? x.tp1)}\nTP2: ${fmt(s?.tp2 ?? x.tp2)}\nTP3: ${fmt(s?.tp3 ?? x.tp3)}\nSL: ${fmt(s?.sl ?? x.sl)}\nBOS: ${x.bos}\nElliott: ${x.ew.mode} ${x.ew.wave}\nFVG: ${x.fvg.type}\nReason: ${els('reason').textContent}\n\nEducational use only. Not financial advice.`;
+
+  if(els('quickSignal')){
+    const quickSig = badgeText || x.sig;
+    els('quickSignal').textContent = quickSig;
+    els('quickSignal').className = quickSig==='BUY'?'green':quickSig==='SELL'?'red':'gold';
+    els('quickEntry').textContent = activeEntry;
+    els('quickSL').textContent = fmt(s?.sl ?? x.sl);
+    els('quickTP1').textContent = fmt(s?.tp1 ?? x.tp1);
+    els('quickTP2').textContent = fmt(s?.tp2 ?? x.tp2);
+    els('quickTP3').textContent = fmt(s?.tp3 ?? x.tp3);
+  }
+
 }
 
 function updateChartLabels(x){

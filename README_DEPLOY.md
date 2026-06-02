@@ -60,3 +60,11 @@ This version adds:
 - Moved chart labels to the right side for better readability.
 - Improved spacing and responsive layout.
 - Login system remains active.
+
+
+## V2.3.3 Refinements
+- Moved logout button to bottom-left so it no longer distracts from the header.
+- Enlarged the left signal panel to visually balance the TradingView area.
+- Added Current Trade Snapshot under TradingView.
+- Centered metric labels in the first column of the multi-timeframe table.
+- Removed unnecessary "Moved under chart" label.
