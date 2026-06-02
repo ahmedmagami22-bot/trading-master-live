@@ -66,6 +66,31 @@
 @media(max-width:900px){.summaryStrip{grid-template-columns:repeat(2,minmax(0,1fr))}.summaryCard .value{font-size:18px}}
 
 </style>
+
+<script>
+(async function protectDashboard(){
+  try {
+    const res = await fetch('/api/check-auth', { cache: 'no-store' });
+    if (!res.ok) {
+      location.replace('/login.html');
+      return;
+    }
+    document.documentElement.classList.add('auth-ok');
+  } catch (e) {
+    location.replace('/login.html');
+  }
+})();
+</script>
+<style>
+html:not(.auth-ok) body{visibility:hidden}
+</style>
+
+
+<style>
+.logoutBtn{position:fixed;left:18px;bottom:18px;z-index:99;background:rgba(255,91,110,.13);border:1px solid rgba(255,91,110,.35);color:#ff5b6e;border-radius:999px;padding:10px 14px;font-weight:900;text-decoration:none;font-size:12px;backdrop-filter:blur(10px)}
+.logoutBtn:hover{background:rgba(255,91,110,.22)}
+</style>
+
 </head>
 <body>
 <div class="wrap">
@@ -522,5 +547,6 @@ function draw(ind={}){
 }
 init();
 </script>
+<a class="logoutBtn" href="/api/logout">Logout</a>
 </body>
 </html>

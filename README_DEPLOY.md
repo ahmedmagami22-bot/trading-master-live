@@ -44,3 +44,11 @@ This version adds:
 - Protected dashboard with Vercel Middleware.
 - Protected Twelve Data backend endpoint.
 - Improved performance table, summary strip, and trade lifecycle rows.
+
+
+## V2.3.1 Login Build Fix
+- Removed Vercel Middleware because this project is deployed as a static/API setup and middleware caused a build error.
+- Added `/api/check-auth` for login verification.
+- Dashboard redirects to `/login.html` if not logged in.
+- Twelve Data API remains protected server-side by the auth cookie.
+- Added Logout button.
