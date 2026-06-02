@@ -22,3 +22,11 @@ TWELVE_DATA_API_KEY=your_key_here
 
 ## ملاحظات مهمة
 التحديث كل دقيقة على 5 فريمات يستهلك طلبات كثيرة من Twelve Data، لذلك يفضل استخدام خطة مناسبة قبل الإطلاق للعملاء.
+
+
+## V2.2 Optimized API Usage
+- Active timeframe refresh: every 60 seconds.
+- Multi-timeframe table refresh: every 15 minutes.
+- Backend cache: 60 seconds with stale-while-revalidate to reduce Twelve Data credit usage.
+- Frontend session cache: prevents duplicate requests inside the same minute.
+- TradingView remains live for visual monitoring.
