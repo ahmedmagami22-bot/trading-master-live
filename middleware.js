@@ -1,3 +1,0 @@
-import { NextResponse } from 'next/server';
-export function middleware(req){const {pathname}=req.nextUrl;const publicPaths=['/login.html','/api/login','/api/logout','/favicon.ico','/robots.txt'];if(publicPaths.some(p=>pathname===p)||pathname.startsWith('/_next'))return NextResponse.next();const expected=process.env.DASHBOARD_AUTH_TOKEN;const cookie=req.cookies.get('tm_auth')?.value;if(!expected||cookie!==expected){return NextResponse.redirect(new URL('/login.html',req.url))}return NextResponse.next()}
-export const config={matcher:['/((?!.*\\.).*)','/api/twelvedata']};
