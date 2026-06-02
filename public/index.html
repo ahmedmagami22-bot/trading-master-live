@@ -85,7 +85,7 @@
 .fullTableCard .mtfVal{font-size:17px}
 .fullTableCard .stateNote{font-size:11px}
 .fullTableCard .disclaimer{text-align:center;padding:0 18px 18px;font-size:12px}
-.chartHint{left:auto!important;right:14px!important;min-width:145px;text-align:left;direction:ltr}
+.chartHint{left:auto!important;right:14px!important;min-width:120px;text-align:left;direction:ltr}
 .logoutBtn{top:18px;bottom:auto}
 @media(max-width:1280px){
   .grid{grid-template-columns:1fr}
@@ -222,6 +222,163 @@
 @media(max-width:760px){
   .logoutBtn{bottom:14px!important;left:14px!important;padding:9px 12px!important}
   .quickGrid{grid-template-columns:1fr}
+}
+
+
+/* V2.3.4 clean layout */
+.grid{
+  grid-template-columns:minmax(0,1.72fr) minmax(330px,.62fr)!important;
+  gap:14px!important;
+}
+.side > .card:first-child{
+  min-height:auto!important;
+  display:block!important;
+}
+.side > .card:first-child .miniCard:last-child{
+  flex:unset!important;
+  display:block!important;
+}
+.side .card{
+  border-radius:16px!important;
+}
+.heroMetrics{
+  padding:12px!important;
+  gap:10px!important;
+}
+.bias,.mainPrice{
+  padding:13px!important;
+  border-radius:14px!important;
+}
+.bias .word{
+  font-size:28px!important;
+}
+.mainPrice b{
+  font-size:25px!important;
+}
+.stats{
+  padding:0 12px 12px!important;
+  gap:7px!important;
+}
+.stat{
+  padding:8px!important;
+}
+.signal{
+  padding:11px!important;
+}
+.signalBox{
+  min-height:138px!important;
+  border-radius:15px!important;
+}
+.signalGrid{
+  gap:7px!important;
+}
+.level{
+  padding:9px 7px!important;
+}
+.lists{
+  padding:0 12px 12px!important;
+  gap:10px!important;
+}
+.miniCard{
+  padding:11px!important;
+  border-radius:14px!important;
+}
+.side > .card:first-child .chip{
+  padding:6px 8px!important;
+  font-size:10px!important;
+}
+.chartWrap{
+  height:560px!important;
+}
+.tvBox{
+  min-height:420px!important;
+  height:420px!important;
+}
+.quickSignalPanel{
+  margin-top:10px!important;
+  padding:10px!important;
+  border-radius:15px!important;
+}
+.quickSignalPanel h3{
+  display:none!important;
+}
+.quickGrid{
+  grid-template-columns:repeat(3,1fr)!important;
+  gap:7px!important;
+}
+.quickBox{
+  padding:9px!important;
+  border-radius:12px!important;
+}
+.quickBox small{
+  margin-bottom:5px!important;
+}
+.quickBox b{
+  font-size:13px!important;
+}
+.logoutBtn{
+  width:44px!important;
+  height:44px!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:50%!important;
+  bottom:18px!important;
+  left:18px!important;
+  font-size:22px!important;
+  color:#ff7182!important;
+  background:rgba(255,91,110,.12)!important;
+  border:1px solid rgba(255,91,110,.36)!important;
+}
+.logoutBtn span{
+  display:none!important;
+}
+.logoutBtn:hover span{
+  display:block!important;
+  position:absolute;
+  left:52px;
+  bottom:5px;
+  white-space:nowrap;
+  background:#111827;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.12);
+  padding:7px 10px;
+  border-radius:10px;
+  font-size:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.3);
+}
+.fullTableCard{
+  margin-top:14px!important;
+}
+.fullTableCard .perfTable{
+  padding:14px!important;
+}
+.fullTableCard .summaryStrip{
+  margin-bottom:14px!important;
+}
+.fullTableCard .summaryCard{
+  min-height:72px!important;
+  padding:12px!important;
+}
+.fullTableCard .summaryCard .value{
+  font-size:22px!important;
+}
+.fullTableCard .mtfWrap{
+  padding:12px!important;
+}
+.fullTableCard .mtfCell{
+  min-height:54px!important;
+}
+@media(max-width:1280px){
+  .grid{grid-template-columns:1fr!important}
+  .chartWrap{height:460px!important}
+  .tvBox{height:390px!important;min-height:390px!important}
+}
+@media(max-width:760px){
+  .chartWrap{height:370px!important}
+  .tvBox{height:330px!important;min-height:330px!important}
+  .quickGrid{grid-template-columns:1fr!important}
 }
 
 </style>
@@ -262,7 +419,7 @@ html:not(.auth-ok) body{visibility:hidden}
 .fullTableCard .mtfVal{font-size:17px}
 .fullTableCard .stateNote{font-size:11px}
 .fullTableCard .disclaimer{text-align:center;padding:0 18px 18px;font-size:12px}
-.chartHint{left:auto!important;right:14px!important;min-width:145px;text-align:left;direction:ltr}
+.chartHint{left:auto!important;right:14px!important;min-width:120px;text-align:left;direction:ltr}
 .logoutBtn{top:18px;bottom:auto}
 @media(max-width:1280px){
   .grid{grid-template-columns:1fr}
@@ -399,6 +556,163 @@ html:not(.auth-ok) body{visibility:hidden}
 @media(max-width:760px){
   .logoutBtn{bottom:14px!important;left:14px!important;padding:9px 12px!important}
   .quickGrid{grid-template-columns:1fr}
+}
+
+
+/* V2.3.4 clean layout */
+.grid{
+  grid-template-columns:minmax(0,1.72fr) minmax(330px,.62fr)!important;
+  gap:14px!important;
+}
+.side > .card:first-child{
+  min-height:auto!important;
+  display:block!important;
+}
+.side > .card:first-child .miniCard:last-child{
+  flex:unset!important;
+  display:block!important;
+}
+.side .card{
+  border-radius:16px!important;
+}
+.heroMetrics{
+  padding:12px!important;
+  gap:10px!important;
+}
+.bias,.mainPrice{
+  padding:13px!important;
+  border-radius:14px!important;
+}
+.bias .word{
+  font-size:28px!important;
+}
+.mainPrice b{
+  font-size:25px!important;
+}
+.stats{
+  padding:0 12px 12px!important;
+  gap:7px!important;
+}
+.stat{
+  padding:8px!important;
+}
+.signal{
+  padding:11px!important;
+}
+.signalBox{
+  min-height:138px!important;
+  border-radius:15px!important;
+}
+.signalGrid{
+  gap:7px!important;
+}
+.level{
+  padding:9px 7px!important;
+}
+.lists{
+  padding:0 12px 12px!important;
+  gap:10px!important;
+}
+.miniCard{
+  padding:11px!important;
+  border-radius:14px!important;
+}
+.side > .card:first-child .chip{
+  padding:6px 8px!important;
+  font-size:10px!important;
+}
+.chartWrap{
+  height:560px!important;
+}
+.tvBox{
+  min-height:420px!important;
+  height:420px!important;
+}
+.quickSignalPanel{
+  margin-top:10px!important;
+  padding:10px!important;
+  border-radius:15px!important;
+}
+.quickSignalPanel h3{
+  display:none!important;
+}
+.quickGrid{
+  grid-template-columns:repeat(3,1fr)!important;
+  gap:7px!important;
+}
+.quickBox{
+  padding:9px!important;
+  border-radius:12px!important;
+}
+.quickBox small{
+  margin-bottom:5px!important;
+}
+.quickBox b{
+  font-size:13px!important;
+}
+.logoutBtn{
+  width:44px!important;
+  height:44px!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:50%!important;
+  bottom:18px!important;
+  left:18px!important;
+  font-size:22px!important;
+  color:#ff7182!important;
+  background:rgba(255,91,110,.12)!important;
+  border:1px solid rgba(255,91,110,.36)!important;
+}
+.logoutBtn span{
+  display:none!important;
+}
+.logoutBtn:hover span{
+  display:block!important;
+  position:absolute;
+  left:52px;
+  bottom:5px;
+  white-space:nowrap;
+  background:#111827;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.12);
+  padding:7px 10px;
+  border-radius:10px;
+  font-size:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.3);
+}
+.fullTableCard{
+  margin-top:14px!important;
+}
+.fullTableCard .perfTable{
+  padding:14px!important;
+}
+.fullTableCard .summaryStrip{
+  margin-bottom:14px!important;
+}
+.fullTableCard .summaryCard{
+  min-height:72px!important;
+  padding:12px!important;
+}
+.fullTableCard .summaryCard .value{
+  font-size:22px!important;
+}
+.fullTableCard .mtfWrap{
+  padding:12px!important;
+}
+.fullTableCard .mtfCell{
+  min-height:54px!important;
+}
+@media(max-width:1280px){
+  .grid{grid-template-columns:1fr!important}
+  .chartWrap{height:460px!important}
+  .tvBox{height:390px!important;min-height:390px!important}
+}
+@media(max-width:760px){
+  .chartWrap{height:370px!important}
+  .tvBox{height:330px!important;min-height:330px!important}
+  .quickGrid{grid-template-columns:1fr!important}
 }
 
 </style>
@@ -427,7 +741,7 @@ html:not(.auth-ok) body{visibility:hidden}
 .fullTableCard .mtfVal{font-size:17px}
 .fullTableCard .stateNote{font-size:11px}
 .fullTableCard .disclaimer{text-align:center;padding:0 18px 18px;font-size:12px}
-.chartHint{left:auto!important;right:14px!important;min-width:145px;text-align:left;direction:ltr}
+.chartHint{left:auto!important;right:14px!important;min-width:120px;text-align:left;direction:ltr}
 .logoutBtn{top:18px;bottom:auto}
 @media(max-width:1280px){
   .grid{grid-template-columns:1fr}
@@ -564,6 +878,163 @@ html:not(.auth-ok) body{visibility:hidden}
 @media(max-width:760px){
   .logoutBtn{bottom:14px!important;left:14px!important;padding:9px 12px!important}
   .quickGrid{grid-template-columns:1fr}
+}
+
+
+/* V2.3.4 clean layout */
+.grid{
+  grid-template-columns:minmax(0,1.72fr) minmax(330px,.62fr)!important;
+  gap:14px!important;
+}
+.side > .card:first-child{
+  min-height:auto!important;
+  display:block!important;
+}
+.side > .card:first-child .miniCard:last-child{
+  flex:unset!important;
+  display:block!important;
+}
+.side .card{
+  border-radius:16px!important;
+}
+.heroMetrics{
+  padding:12px!important;
+  gap:10px!important;
+}
+.bias,.mainPrice{
+  padding:13px!important;
+  border-radius:14px!important;
+}
+.bias .word{
+  font-size:28px!important;
+}
+.mainPrice b{
+  font-size:25px!important;
+}
+.stats{
+  padding:0 12px 12px!important;
+  gap:7px!important;
+}
+.stat{
+  padding:8px!important;
+}
+.signal{
+  padding:11px!important;
+}
+.signalBox{
+  min-height:138px!important;
+  border-radius:15px!important;
+}
+.signalGrid{
+  gap:7px!important;
+}
+.level{
+  padding:9px 7px!important;
+}
+.lists{
+  padding:0 12px 12px!important;
+  gap:10px!important;
+}
+.miniCard{
+  padding:11px!important;
+  border-radius:14px!important;
+}
+.side > .card:first-child .chip{
+  padding:6px 8px!important;
+  font-size:10px!important;
+}
+.chartWrap{
+  height:560px!important;
+}
+.tvBox{
+  min-height:420px!important;
+  height:420px!important;
+}
+.quickSignalPanel{
+  margin-top:10px!important;
+  padding:10px!important;
+  border-radius:15px!important;
+}
+.quickSignalPanel h3{
+  display:none!important;
+}
+.quickGrid{
+  grid-template-columns:repeat(3,1fr)!important;
+  gap:7px!important;
+}
+.quickBox{
+  padding:9px!important;
+  border-radius:12px!important;
+}
+.quickBox small{
+  margin-bottom:5px!important;
+}
+.quickBox b{
+  font-size:13px!important;
+}
+.logoutBtn{
+  width:44px!important;
+  height:44px!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:50%!important;
+  bottom:18px!important;
+  left:18px!important;
+  font-size:22px!important;
+  color:#ff7182!important;
+  background:rgba(255,91,110,.12)!important;
+  border:1px solid rgba(255,91,110,.36)!important;
+}
+.logoutBtn span{
+  display:none!important;
+}
+.logoutBtn:hover span{
+  display:block!important;
+  position:absolute;
+  left:52px;
+  bottom:5px;
+  white-space:nowrap;
+  background:#111827;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.12);
+  padding:7px 10px;
+  border-radius:10px;
+  font-size:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.3);
+}
+.fullTableCard{
+  margin-top:14px!important;
+}
+.fullTableCard .perfTable{
+  padding:14px!important;
+}
+.fullTableCard .summaryStrip{
+  margin-bottom:14px!important;
+}
+.fullTableCard .summaryCard{
+  min-height:72px!important;
+  padding:12px!important;
+}
+.fullTableCard .summaryCard .value{
+  font-size:22px!important;
+}
+.fullTableCard .mtfWrap{
+  padding:12px!important;
+}
+.fullTableCard .mtfCell{
+  min-height:54px!important;
+}
+@media(max-width:1280px){
+  .grid{grid-template-columns:1fr!important}
+  .chartWrap{height:460px!important}
+  .tvBox{height:390px!important;min-height:390px!important}
+}
+@media(max-width:760px){
+  .chartWrap{height:370px!important}
+  .tvBox{height:330px!important;min-height:330px!important}
+  .quickGrid{grid-template-columns:1fr!important}
 }
 
 </style>
@@ -1050,6 +1521,6 @@ function draw(ind={}){
 }
 init();
 </script>
-<a class="logoutBtn" href="/api/logout">تسجيل خروج</a>
+<a class="logoutBtn" href="/api/logout" title="تسجيل الخروج" aria-label="تسجيل الخروج">⎋<span>تسجيل الخروج</span></a>
 </body>
 </html>

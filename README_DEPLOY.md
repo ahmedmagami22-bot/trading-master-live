@@ -68,3 +68,10 @@ This version adds:
 - Added Current Trade Snapshot under TradingView.
 - Centered metric labels in the first column of the multi-timeframe table.
 - Removed unnecessary "Moved under chart" label.
+
+
+## V2.3.4 Clean Layout
+- Converted logout button to icon-only with hover label.
+- Reduced the empty space on the left side by compacting the signal panel.
+- Reduced TradingView height and compacted Current Trade Snapshot.
+- Kept the full-width multi-timeframe table.
