@@ -103,3 +103,9 @@ You can remove later if unused:
 ### Supabase
 Create users manually from Authentication → Users.
 Sign up is not exposed in the dashboard login page.
+
+
+## V2.3.7 Supabase Loop Fix
+- Removed the old `/api/check-auth` page guard that was conflicting with Supabase Auth.
+- Stabilized Supabase session persistence using localStorage, autoRefreshToken and detectSessionInUrl.
+- Fixed redirect loop between `/` and `/login.html`.

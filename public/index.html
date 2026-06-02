@@ -470,20 +470,6 @@
 
 </style>
 
-<script>
-(async function protectDashboard(){
-  try {
-    const res = await fetch('/api/check-auth', { cache: 'no-store' });
-    if (!res.ok) {
-      location.replace('/login.html');
-      return;
-    }
-    document.documentElement.classList.add('auth-ok');
-  } catch (e) {
-    location.replace('/login.html');
-  }
-})();
-</script>
 <style>
 html:not(.auth-ok) body{visibility:hidden}
 
