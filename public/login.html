@@ -1,1 +1,64 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Trading Master Login</title><style>*{box-sizing:border-box;margin:0;padding:0}body{min-height:100vh;background:radial-gradient(circle at 20% 20%,rgba(242,183,5,.13),transparent 28%),linear-gradient(180deg,#070b12,#0b1220);font-family:Arial,Tahoma,sans-serif;color:#fff;display:flex;align-items:center;justify-content:center;padding:20px}.card{width:min(430px,100%);background:rgba(13,20,35,.96);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.35)}.logo{width:62px;height:62px;border-radius:18px;background:linear-gradient(180deg,#111827,#05070b);border:1px solid rgba(242,183,5,.45);display:flex;align-items:center;justify-content:center;color:#f2b705;font-weight:900;margin:0 auto 16px;text-align:center}h1{text-align:center;font-size:24px;margin-bottom:8px}p{text-align:center;color:#97a4ba;font-size:13px;line-height:1.7;margin-bottom:22px}label{display:block;margin:12px 0 7px;color:#cbd5e1;font-size:13px;font-weight:700}input{width:100%;border:1px solid rgba(255,255,255,.12);background:#08111f;color:#fff;border-radius:14px;padding:14px;font-size:15px;outline:none}input:focus{border-color:#f2b705;box-shadow:0 0 0 3px rgba(242,183,5,.1)}button{width:100%;margin-top:18px;border:0;border-radius:14px;padding:14px;background:#f2b705;color:#08111f;font-weight:900;font-size:16px;cursor:pointer}.err{display:none;margin-top:14px;color:#ff5b6e;background:rgba(255,91,110,.12);border:1px solid rgba(255,91,110,.25);padding:10px;border-radius:12px;font-size:13px;text-align:center}.hint{margin-top:14px;text-align:center;color:#64748b;font-size:11px}</style></head><body><form class="card" id="loginForm"><div class="logo">TM<br/>GOLD</div><h1>Trading Master Live</h1><p>من فضلك سجل الدخول لمتابعة داشبورد XAU/USD. الدخول مخصص للفريق والعملاء المصرح لهم فقط.</p><label>اسم المستخدم</label><input name="username" autocomplete="username" required/><label>كلمة المرور</label><input name="password" type="password" autocomplete="current-password" required/><button type="submit">دخول</button><div class="err" id="err">بيانات الدخول غير صحيحة</div><div class="hint">Secure access • Trading Master</div></form><script>document.getElementById('loginForm').addEventListener('submit',async(e)=>{e.preventDefault();const err=document.getElementById('err');err.style.display='none';const fd=new FormData(e.currentTarget);const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:fd.get('username'),password:fd.get('password')})});if(res.ok){location.href='/'}else{err.style.display='block'}});</script></body></html>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Trading Master Login</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{min-height:100vh;background:radial-gradient(circle at 20% 20%,rgba(242,183,5,.13),transparent 28%),linear-gradient(180deg,#070b12,#0b1220);font-family:Arial,Tahoma,sans-serif;color:#fff;display:flex;align-items:center;justify-content:center;padding:20px}
+    .card{width:min(430px,100%);background:rgba(13,20,35,.96);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+    .logo{width:62px;height:62px;border-radius:18px;background:linear-gradient(180deg,#111827,#05070b);border:1px solid rgba(242,183,5,.45);display:flex;align-items:center;justify-content:center;color:#f2b705;font-weight:900;margin:0 auto 16px;text-align:center}
+    h1{text-align:center;font-size:24px;margin-bottom:8px}
+    p{text-align:center;color:#97a4ba;font-size:13px;line-height:1.7;margin-bottom:22px}
+    label{display:block;margin:12px 0 7px;color:#cbd5e1;font-size:13px;font-weight:700}
+    input{width:100%;border:1px solid rgba(255,255,255,.12);background:#08111f;color:#fff;border-radius:14px;padding:14px;font-size:15px;outline:none;direction:ltr;text-align:left}
+    input:focus{border-color:#f2b705;box-shadow:0 0 0 3px rgba(242,183,5,.1)}
+    button{width:100%;margin-top:18px;border:0;border-radius:14px;padding:14px;background:#f2b705;color:#08111f;font-weight:900;font-size:16px;cursor:pointer}
+    button:disabled{opacity:.65;cursor:not-allowed}
+    .err{display:none;margin-top:14px;color:#ff5b6e;background:rgba(255,91,110,.12);border:1px solid rgba(255,91,110,.25);padding:10px;border-radius:12px;font-size:13px;text-align:center;line-height:1.6}
+    .hint{margin-top:14px;text-align:center;color:#64748b;font-size:11px}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <form class="card" id="loginForm">
+    <div class="logo">TM<br/>GOLD</div>
+    <h1>Trading Master Live</h1>
+    <p>سجل الدخول بالإيميل والباسورد الخاصين بك لمتابعة داشبورد XAU/USD.</p>
+    <label>الإيميل</label>
+    <input name="email" type="email" autocomplete="email" placeholder="client@email.com" required/>
+    <label>كلمة المرور</label>
+    <input name="password" type="password" autocomplete="current-password" required/>
+    <button id="submitBtn" type="submit">دخول</button>
+    <div class="err" id="err">بيانات الدخول غير صحيحة أو الحساب غير مفعل</div>
+    <div class="hint">Secure Supabase Auth • Trading Master</div>
+  </form>
+<script>
+const SUPABASE_URL = "https://boofaksowdohnzapcwhr.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_JdMEz9pwOafCtTUz6PBS0A_eEAQS5qA";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+(async () => {
+  const { data } = await sb.auth.getSession();
+  if (data.session) location.replace('/');
+})();
+
+document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const err=document.getElementById('err');
+  const btn=document.getElementById('submitBtn');
+  err.style.display='none';
+  btn.disabled=true; btn.textContent='جاري الدخول...';
+  const fd=new FormData(e.currentTarget);
+  const { error } = await sb.auth.signInWithPassword({
+    email: String(fd.get('email')||'').trim(),
+    password: String(fd.get('password')||'')
+  });
+  btn.disabled=false; btn.textContent='دخول';
+  if(error){ err.textContent = error.message || 'بيانات الدخول غير صحيحة'; err.style.display='block'; return; }
+  location.replace('/');
+});
+</script>
+</body>
+</html>

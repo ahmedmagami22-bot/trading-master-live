@@ -82,3 +82,24 @@ This version adds:
 - Moved TradingView to a full-width section under the main chart/grid.
 - Reduced empty space on the left by separating TradingView from the side panel.
 - Changed logout to a fixed user-icon button with hover label.
+
+
+## V2.3.6 Supabase Auth
+This version replaces the single shared username/password login with Supabase email/password authentication.
+
+### Vercel Environment Variables
+Keep:
+- TWELVE_DATA_API_KEY
+
+Add:
+- SUPABASE_URL = https://boofaksowdohnzapcwhr.supabase.co
+- SUPABASE_ANON_KEY = sb_publishable_JdMEz9pwOafCtTUz6PBS0A_eEAQS5qA
+
+You can remove later if unused:
+- DASHBOARD_USER
+- DASHBOARD_PASS
+- DASHBOARD_AUTH_TOKEN
+
+### Supabase
+Create users manually from Authentication → Users.
+Sign up is not exposed in the dashboard login page.

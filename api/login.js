@@ -1,1 +1,3 @@
-export default async function handler(req,res){if(req.method!=='POST')return res.status(405).json({ok:false});const user=process.env.DASHBOARD_USER,pass=process.env.DASHBOARD_PASS,token=process.env.DASHBOARD_AUTH_TOKEN;if(!user||!pass||!token)return res.status(500).json({ok:false,message:'Missing auth env'});const {username,password}=req.body||{};if(username===user&&password===pass){res.setHeader('Set-Cookie',`tm_auth=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);return res.status(200).json({ok:true})}return res.status(401).json({ok:false})}
+export default async function handler(req, res) {
+  return res.status(410).json({ ok:false, message:'Supabase Auth is used on the client login page.' });
+}

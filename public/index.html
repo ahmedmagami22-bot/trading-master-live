@@ -1300,6 +1300,41 @@ html:not(.auth-ok) body{visibility:hidden}
 
 </style>
 
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://boofaksowdohnzapcwhr.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_JdMEz9pwOafCtTUz6PBS0A_eEAQS5qA";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function getAccessToken(){
+  const { data } = await sb.auth.getSession();
+  return data.session?.access_token || null;
+}
+
+(async function protectDashboard(){
+  try {
+    const { data } = await sb.auth.getSession();
+    if (!data.session) {
+      location.replace('/login.html');
+      return;
+    }
+    window.tmUserEmail = data.session.user?.email || '';
+    document.documentElement.classList.add('auth-ok');
+  } catch(e) {
+    location.replace('/login.html');
+  }
+})();
+
+async function logoutSupabase(){
+  try { await sb.auth.signOut(); } catch(e) {}
+  location.replace('/login.html');
+}
+</script>
+<style>
+html:not(.auth-ok) body{visibility:hidden}
+</style>
+
 </head>
 <body>
 <div class="wrap">
@@ -1479,7 +1514,9 @@ async function fetchInterval(interval, force=false){
 
   inFlight[interval] = (async()=>{
     const url = `/api/twelvedata?symbol=${encodeURIComponent('XAU/USD')}&interval=${encodeURIComponent(interval)}&outputsize=220`;
-    const res = await fetch(url, { cache: 'default' });
+    const token = await getAccessToken();
+    if(!token){ location.replace('/login.html'); throw new Error('Not logged in'); }
+    const res = await fetch(url, { cache: 'default', headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json();
     if(!res.ok || data.status === 'error' || data.code || !data.values) throw new Error(data.message || data.error || 'API error');
     const arr = data.values.map(v=>({t:v.datetime,o:num(v.open),h:num(v.high),l:num(v.low),c:num(v.close),v:num(v.volume||0)})).filter(x=>Number.isFinite(x.c)).reverse();
@@ -1498,7 +1535,7 @@ async function refreshActive(force=false){
     const data = await fetchInterval(INTERVAL, force);
     tfResults[INTERVAL] = analyzeData(data, INTERVAL);
     lastActiveUpdate = new Date();
-    els('sourceLabel').textContent = 'Secure Live';
+    els('sourceLabel').textContent = window.tmUserEmail ? 'Secure Live • '+window.tmUserEmail : 'Secure Live';
     updateActiveFromResults();
     renderTfTable();
     setStatus('تم تحديث الفريم النشط بنجاح. جدول الفريمات يتحدث كل 15 دقيقة.', true);
@@ -1516,7 +1553,7 @@ async function refreshTable(force=false){
     const pairs = await Promise.all(missing.map(async ([tf])=>[tf, await fetchInterval(tf, force)]));
     pairs.forEach(([tf, data])=>{ tfResults[tf] = analyzeData(data, tf); });
     lastTableUpdate = new Date();
-    els('sourceLabel').textContent = 'Secure Live';
+    els('sourceLabel').textContent = window.tmUserEmail ? 'Secure Live • '+window.tmUserEmail : 'Secure Live';
     updateActiveFromResults();
     renderTfTable();
     setStatus('تم تحديث جدول الفريمات بنجاح. التحديث القادم للجدول بعد 15 دقيقة.', true);
@@ -1760,6 +1797,6 @@ function draw(ind={}){
 }
 init();
 </script>
-<a class="logoutBtn" href="/api/logout" title="تسجيل الخروج" aria-label="تسجيل الخروج"><span class="userIcon">👤</span><span class="logoutText">تسجيل الخروج</span></a>
+<a class="logoutBtn" href="#" onclick="logoutSupabase();return false;" title="تسجيل الخروج" aria-label="تسجيل الخروج"><span class="userIcon">👤</span><span class="logoutText">تسجيل الخروج</span></a>
 </body>
 </html>

@@ -1,11 +1,25 @@
 export default async function handler(req, res) {
-  const authToken = process.env.DASHBOARD_AUTH_TOKEN;
-  const cookie = req.headers.cookie || '';
-  if (authToken && !cookie.includes(`tm_auth=${authToken}`)) {
-    return res.status(401).json({ status: 'error', message: 'Unauthorized' });
+  const supabaseUrl = process.env.SUPABASE_URL || 'https://boofaksowdohnzapcwhr.supabase.co';
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'sb_publishable_JdMEz9pwOafCtTUz6PBS0A_eEAQS5qA';
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+
+  if (!token) {
+    return res.status(401).json({ status: 'error', message: 'Missing Supabase auth token' });
   }
 
-  const apiKey = process.env.TWELVE_DATA_API_KEY;
+  const authCheck = await fetch(`${supabaseUrl}/auth/v1/user`, {
+    headers: {
+      apikey: supabaseAnonKey,
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!authCheck.ok) {
+    return res.status(401).json({ status: 'error', message: 'Invalid or expired session' });
+  }
+
+const apiKey = process.env.TWELVE_DATA_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ status: 'error', message: 'Missing TWELVE_DATA_API_KEY on server' });
   }
