@@ -201,3 +201,10 @@ Required before production use:
   2. Fallback to latest `1min` time_series close
 - Demo Mode remains disabled.
 - Dashboard will not display fake prices.
+
+## V2.4.6 Time Series Source No Blocking
+- The dashboard no longer depends on `/price` endpoint to render.
+- Uses Twelve Data `time_series` as the primary source for all frames.
+- Uses latest `1min` time_series close as current price when available.
+- Uses Promise.allSettled so one failed timeframe doesn't kill the whole dashboard.
+- Demo Mode remains disabled.

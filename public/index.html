@@ -1332,6 +1332,16 @@ try{
 }catch(e){}
 </script>
 
+
+<script>
+try{
+  if(localStorage.getItem('tm_sync_version') !== 'v246'){
+    sessionStorage.clear();
+    localStorage.setItem('tm_sync_version','v246');
+  }
+}catch(e){}
+</script>
+
 </head>
 <body>
 <div class="wrap">
@@ -1442,7 +1452,7 @@ try{
       <section class="card">
         <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Live updates every 5 seconds</h2><small>متابعة لحظية للإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
         <div class="perfTable"><div class="summaryStrip" id="summaryStrip"></div><div class="mtfWrap"><div class="tfGrid" id="tfGrid"></div></div></div>
-        <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. السعر ومناطق الدخول مبنية على Twelve Data الحقيقي. لو Price API فشل يتم استخدام آخر Close من فريم 1 دقيقة بدل الديمو.</div>
+        <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. السعر ومناطق الدخول مبنية على Twelve Data Time Series الحقيقي. تم إيقاف الديمو، وفشل Price API لا يوقف الداشبورد.</div>
   </section>
   <div class="foot">Trading Master • Educational technical dashboard • Not financial advice • Signal Engine</div>
 </div>
@@ -1543,50 +1553,90 @@ async function refreshAllLive(force=false){
 
 async function refreshActive(force=false){
   try{
-    setStatus('جاري تحديث الفريم النشط من السعر الحقيقي...', true);
-    const [livePrice, data] = await Promise.all([fetchLivePrice(force), fetchInterval(INTERVAL, true)]);
-    if(data && data.length){
-      const last = data[data.length-1];
-      last.c = livePrice;
-      last.h = Math.max(last.h, livePrice);
-      last.l = Math.min(last.l, livePrice);
-    }
+    setStatus('جاري تحديث الفريم النشط من Twelve Data Time Series...', true);
+    const data = await fetchInterval(INTERVAL, true);
+
+    try{
+      const oneMin = await fetchInterval('1min', true);
+      if(oneMin && oneMin.length && data && data.length){
+        const p = oneMin[oneMin.length-1].c;
+        const last = data[data.length-1];
+        last.c = p;
+        last.h = Math.max(last.h, p);
+        last.l = Math.min(last.l, p);
+      }
+    }catch(e){}
+
     tfResults[INTERVAL] = analyzeData(data, INTERVAL);
     lastActiveUpdate = new Date();
     els('sourceLabel').textContent = window.tmUserEmail ? 'Real Market • '+window.tmUserEmail : 'Real Market';
     updateActiveFromResults();
     renderTfTable();
     syncTradeEvents();
-    setStatus('تم تحديث الفريم النشط من السعر الحقيقي. لا يوجد API Error.', true);
+    setStatus('تم تحديث الفريم النشط من بيانات السوق الحقيقية. لا يوجد Demo Mode.', true);
   }catch(e){
     els('sourceLabel').textContent = 'API Error';
-    setStatus('خطأ في جلب السعر الحقيقي: '+e.message+' — لن يتم تشغيل ديمو.', false);
+    setStatus('خطأ في جلب بيانات الفريم النشط: '+e.message+' — لن يتم تشغيل ديمو.', false);
   }
 }
 
 async function refreshTable
 
+async function refreshTable
+
 async function refreshTable(force=false){
   try{
-    setStatus('جاري تحديث كل الفريمات والسعر الحقيقي من Twelve Data...', true);
-    const livePrice = await fetchLivePrice(force);
-    const pairs = await Promise.all(ALL_TF.map(async ([tf])=>[tf, await fetchInterval(tf, true)]));
-    pairs.forEach(([tf, data])=>{
-      // دمج آخر سعر حقيقي داخل آخر شمعة حتى لا تعرض الداشبورد Close قديم أو Demo.
-      if(data && data.length){
-        const last = data[data.length-1];
-        last.c = livePrice;
-        last.h = Math.max(last.h, livePrice);
-        last.l = Math.min(last.l, livePrice);
+    setStatus('جاري تحديث كل الفريمات من Twelve Data Time Series...', true);
+
+    // V2.4.6:
+    // لا نعطل الداشبورد بسبب endpoint السعر اللحظي.
+    // المصدر الأساسي الآن هو time_series لكل الفريمات + فريم 1 دقيقة لآخر سعر.
+    let livePrice = null;
+    try{
+      const oneMin = await fetchInterval('1min', true);
+      if(oneMin && oneMin.length) livePrice = oneMin[oneMin.length-1].c;
+    }catch(priceErr){
+      console.warn('1min live price failed, will use active/latest candle close', priceErr);
+    }
+
+    const settled = await Promise.allSettled(
+      ALL_TF.map(async ([tf]) => [tf, await fetchInterval(tf, true)])
+    );
+
+    const errors = [];
+    settled.forEach((item, idx)=>{
+      const tf = ALL_TF[idx][0];
+      if(item.status === 'fulfilled'){
+        const [okTf, data] = item.value;
+        if(data && data.length){
+          const last = data[data.length-1];
+          const p = Number.isFinite(livePrice) ? livePrice : last.c;
+          // نستخدم السعر الأحدث فقط في close الحالي، مع الحفاظ على شموع الفريم نفسها.
+          last.c = p;
+          last.h = Math.max(last.h, p);
+          last.l = Math.min(last.l, p);
+        }
+        tfResults[okTf] = analyzeData(data, okTf);
+      }else{
+        errors.push(`${tf}: ${item.reason?.message || item.reason || 'failed'}`);
       }
-      tfResults[tf] = analyzeData(data, tf);
     });
+
+    if(!Object.keys(tfResults).length){
+      throw new Error(errors.join(' | ') || 'No timeframe data returned');
+    }
+
     lastTableUpdate = new Date();
     els('sourceLabel').textContent = window.tmUserEmail ? 'Real Market • '+window.tmUserEmail : 'Real Market';
     updateActiveFromResults();
     renderTfTable();
     syncTradeEvents();
-    setStatus('تم تحديث كل الفريمات والجدول من السعر الحقيقي. لا يوجد API Error.', true);
+
+    if(errors.length){
+      setStatus('تم تحديث الفريمات المتاحة، لكن بعض الفريمات فشلت: '+errors.join(' | '), false);
+    }else{
+      setStatus('تم تحديث كل الفريمات من بيانات السوق الحقيقية. لا يوجد Demo Mode.', true);
+    }
   }catch(e){
     els('sourceLabel').textContent = 'API Error';
     setStatus('خطأ في جلب بيانات السوق الحقيقي: '+e.message+' — لن يتم تشغيل ديمو حتى لا تظهر أرقام غير مطابقة للسوق.', false);
