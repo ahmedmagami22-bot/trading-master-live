@@ -1348,7 +1348,7 @@ try{
     <section class="actions">
       <div class="keyRow"><div class="backendBadge">Secure Backend Mode — Signal Engine</div><button class="btn" id="refreshNow">Refresh</button></div>
       <div class="miniActions"><span>تحديث لحظي تقريبي لكل الفريمات والجدول كل 5 ثواني + صافي مركزي حقيقي من Supabase.</span></div>
-      <div class="warnbox">مهم: تم تحسين الاستهلاك؛ تحديث الفريم النشط كل دقيقة، وجدول الفريمات كل 15 دقيقة، مع Cache في الـ Backend. قبل إطلاق العملاء نحتاج Login + مراقبة استهلاك + خطة بيانات مناسبة.</div>
+      <div class="warnbox">مهم: النظام الآن يعمل بتحديث سريع لكل الفريمات والجدول كل 5 ثواني عبر Backend Cache. لو بيانات الشموع نفسها لم تتغير من Twelve Data فلن تتغير الأرقام إلا عند وصول Candle/Price جديد من المصدر.</div>
     </section>
   </div>
 
@@ -1489,8 +1489,8 @@ function init(){
   els('copySignal').onclick = async()=>{try{await navigator.clipboard.writeText(lastSignalText || 'No signal yet');setStatus('تم نسخ الإشارة.', true)}catch(e){setStatus('لم يتم النسخ تلقائيًا. انسخ الإشارة يدويًا.', false)}};
   setInterval(()=>{els('clock').textContent=nowClock()},1000); els('clock').textContent=nowClock();
 
-  refreshAllLive(true);               // V2.4.0 أول تحميل لكل الفريمات
-  timer = setInterval(()=>refreshAllLive(false), TABLE_REFRESH_MS);
+  refreshAllLive(true);               // V2.4.2 أول تحميل لكل الفريمات والجدول
+  timer = setInterval(()=>refreshAllLive(false), TABLE_REFRESH_MS); // V2.4.2 تحديث كل الفريمات والجدول كل 5 ثواني
   window.addEventListener('resize', ()=>draw(tfResults[INTERVAL]?.ind || {}));
 }
 async function fetchInterval(interval, force=false){
@@ -1509,10 +1509,10 @@ async function fetchInterval(interval, force=false){
   if(inFlight[interval]) return inFlight[interval];
 
   inFlight[interval] = (async()=>{
-    const url = `/api/twelvedata?symbol=${encodeURIComponent('XAU/USD')}&interval=${encodeURIComponent(interval)}&outputsize=260`;
+    const url = `/api/twelvedata?symbol=${encodeURIComponent('XAU/USD')}&interval=${encodeURIComponent(interval)}&outputsize=260&ts=${Date.now()}`;
     const token = await getAccessToken();
     if(!token){ location.replace('/login.html'); throw new Error('Not logged in'); }
-    const res = await fetch(url, { cache: 'default', headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(url, { cache: 'no-store', headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json();
     if(!res.ok || data.status === 'error' || data.code || !data.values) throw new Error(data.message || data.error || 'API error');
     const arr = data.values.map(v=>({t:v.datetime,o:num(v.open),h:num(v.high),l:num(v.low),c:num(v.close),v:num(v.volume||0)})).filter(x=>Number.isFinite(x.c)).reverse();

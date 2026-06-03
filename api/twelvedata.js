@@ -1,4 +1,4 @@
-const MEMORY_CACHE_MS = Number(process.env.TWELVE_CACHE_MS || 3000);
+const MEMORY_CACHE_MS = Number(process.env.TWELVE_CACHE_MS || 3000); // set 3000 in Vercel, can use 2000-5000
 const memoryCache = globalThis.__tmTwelveCache || (globalThis.__tmTwelveCache = new Map());
 
 export default async function handler(req, res) {
@@ -48,7 +48,9 @@ const apiKey = process.env.TWELVE_DATA_API_KEY;
   const cacheKey = `${symbol}:${interval}:${outputsize}`;
   const cached = memoryCache.get(cacheKey);
   if (cached && (Date.now() - cached.ts) < MEMORY_CACHE_MS) {
-    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Cache-Control', 'no-store, no-cache, max-age=0, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     res.setHeader('X-TM-Cache', 'memory-hit');
     return res.status(200).json(cached.data);
   }
@@ -61,7 +63,9 @@ const apiKey = process.env.TWELVE_DATA_API_KEY;
     }
 
     memoryCache.set(cacheKey, { ts: Date.now(), data });
-    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Cache-Control', 'no-store, no-cache, max-age=0, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     res.setHeader('X-TM-Cache', 'fresh');
     return res.status(200).json(data);
   } catch (err) {

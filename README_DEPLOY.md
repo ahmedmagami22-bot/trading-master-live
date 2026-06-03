@@ -172,3 +172,11 @@ Required before production use:
 1. Create `trade_events` table in Supabase using SETUP_V241.md.
 2. Add `SUPABASE_SERVICE_ROLE_KEY` in Vercel.
 3. Add optional `TWELVE_CACHE_MS=3000` in Vercel.
+
+
+## V2.4.2 Force Live All Frames
+- Removed old UI warning text that still said active frame every 1 minute and table every 15 minutes.
+- Forced one unified loop: `refreshAllLive()` every 5 seconds.
+- Added cache-buster query param from browser while keeping backend memory cache.
+- Browser fetch uses `cache: no-store`.
+- API response has no-cache headers to avoid stale browser/CDN behavior.
