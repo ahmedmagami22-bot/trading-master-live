@@ -231,3 +231,8 @@ Required before production use:
 - Uses outputsize=120 instead of 260 for more stable polling.
 - Shows partial data if at least one timeframe succeeds.
 - Keeps Supabase login and central PIPS.
+
+## V2.5.0 Syntax Fix
+- Fixed JavaScript syntax error: duplicate incomplete `async function refreshTable` lines.
+- Removed unused frontend `fetchLivePrice` helper.
+- Removes frontend token dependency from market-data fetch.

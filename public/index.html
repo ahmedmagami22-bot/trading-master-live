@@ -1352,6 +1352,16 @@ try{
 }catch(e){}
 </script>
 
+
+<script>
+try{
+  if(localStorage.getItem('tm_sync_version') !== 'v250'){
+    sessionStorage.clear();
+    localStorage.setItem('tm_sync_version','v250');
+  }
+}catch(e){}
+</script>
+
 </head>
 <body>
 <div class="wrap">
@@ -1543,18 +1553,6 @@ async function fetchInterval(interval, force=false){
   try{ return await inFlight[interval]; }
   finally{ delete inFlight[interval]; }
 }
-
-
-async function fetchLivePrice(force=false){
-  const token = await getAccessToken();
-  if(!token){ location.replace('/login.html'); throw new Error('Not logged in'); }
-  const url = `/api/twelvedata?symbol=${encodeURIComponent('XAU/USD')}&endpoint=price&ts=${Date.now()}`;
-  const res = await fetch(url, { cache:'no-store', headers:{ Authorization:`Bearer ${token}` } });
-  const data = await res.json();
-  if(!res.ok || data.status==='error' || data.code || !data.price) throw new Error(data.message || 'Price API error');
-  return Number(data.price);
-}
-
 async function refreshAllLive(force=false){
   await refreshTable(force);
 }
@@ -1576,11 +1574,7 @@ async function refreshActive(force=false){
   }
 }
 
-async function refreshTable
 
-async function refreshTable
-
-async function refreshTable
 
 async function refreshTable(force=false){
   const errors = [];
