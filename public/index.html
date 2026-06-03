@@ -1362,6 +1362,16 @@ try{
 }catch(e){}
 </script>
 
+
+<script>
+try{
+  if(localStorage.getItem('tm_sync_version') !== 'v251'){
+    sessionStorage.clear();
+    localStorage.setItem('tm_sync_version','v251');
+  }
+}catch(e){}
+</script>
+
 </head>
 <body>
 <div class="wrap">
@@ -1377,8 +1387,8 @@ try{
     </section>
     <section class="actions">
       <div class="keyRow"><div class="backendBadge">Secure Backend Mode — Signal Engine</div><button class="btn" id="refreshNow">Refresh</button></div>
-      <div class="miniActions"><span>تحديث لحظي تقريبي لكل الفريمات والجدول كل دقيقة + صافي مركزي حقيقي من Supabase.</span></div>
-      <div class="warnbox">مهم: النظام الآن يعمل بتحديث مستقر لكل الفريمات والجدول كل دقيقة من السعر الحقيقي عبر Backend Cache. لو بيانات الشموع نفسها لم تتغير من Twelve Data فلن تتغير الأرقام إلا عند وصول Candle/Price جديد من المصدر.</div>
+      <div class="miniActions"><span>تحديث لحظي تقريبي لكل الفريمات والجدول كل 15 ثانية + صافي مركزي حقيقي من Supabase.</span></div>
+      <div class="warnbox">مهم: النظام الآن يعمل بتحديث مستقر لكل الفريمات والجدول كل 15 ثانية من السعر الحقيقي عبر Backend Cache. لو بيانات الشموع نفسها لم تتغير من Twelve Data فلن تتغير الأرقام إلا عند وصول Candle/Price جديد من المصدر.</div>
     </section>
   </div>
 
@@ -1470,7 +1480,7 @@ try{
   <section class="card fullTableCard">
 
       <section class="card">
-        <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Stable updates every 60 seconds</h2><small>متابعة لحظية للإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
+        <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Stable updates every 15 seconds</h2><small>متابعة لحظية للإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
         <div class="perfTable"><div class="summaryStrip" id="summaryStrip"></div><div class="mtfWrap"><div class="tfGrid" id="tfGrid"></div></div></div>
         <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. السعر ومناطق الدخول مبنية على Twelve Data Time Series الحقيقي. تم إيقاف الديمو، وفشل Price API لا يوقف الداشبورد.</div>
   </section>
@@ -1479,13 +1489,13 @@ try{
 <script>
 const els = id => document.getElementById(id);
 const ALL_TF = [
-  ['5min','5 دقائق'], ['15min','15 دقيقة'], ['1h','ساعة'], ['4h','4 ساعات'], ['1day','اليوم']
+  ['5min','5 دقائق'], ['15min','15 15 ثانية'], ['1h','ساعة'], ['4h','4 ساعات'], ['1day','اليوم']
 ];
 const ENTRY_LIMIT = { '5min':3, '15min':5, '1h':8, '4h':12, '1day':15 };
 let INTERVAL = localStorage.getItem('tm_interval') || '15min';
-const ACTIVE_REFRESH_MS = 60 * 1000;          // V2.4.8 تحديث مستقر كل دقيقة           // V2.4.1 تحديث لحظي تقريبي كل دقيقة
-const TABLE_REFRESH_MS = 60 * 1000;           // V2.4.8 تحديث كل الفريمات والجدول كل دقيقة            // V2.4.1 تحديث كل الفريمات والجدول كل دقيقة
-const CLIENT_CACHE_MS = 0;                    // لا يوجد كاش محلي                    // V2.4.0 لا يوجد كاش محلي حتى تظهر آخر بيانات من الباك إند
+const ACTIVE_REFRESH_MS = 15 * 1000;          // V2.5.1 تحديث كل 15 ثانية          // V2.4.8 تحديث مستقر كل 15 ثانية           // V2.4.1 تحديث لحظي تقريبي كل 15 ثانية
+const TABLE_REFRESH_MS = 15 * 1000;           // V2.5.1 تحديث كل الفريمات والجدول كل 15 ثانية           // V2.4.8 تحديث كل الفريمات والجدول كل 15 ثانية            // V2.4.1 تحديث كل الفريمات والجدول كل 15 ثانية
+const CLIENT_CACHE_MS = 0;                    // لا يوجد كاش محلي                    // لا يوجد كاش محلي                    // V2.4.0 لا يوجد كاش محلي حتى تظهر آخر بيانات من الباك إند
 let candles = [];
 let timer = null;
 let tableTimer = null;
@@ -1521,7 +1531,7 @@ function init(){
   setInterval(()=>{els('clock').textContent=nowClock()},1000); els('clock').textContent=nowClock();
 
   refreshAllLive(true);               // V2.4.8 أول تحميل لكل الفريمات والجدول
-  timer = setInterval(()=>refreshAllLive(false), TABLE_REFRESH_MS); // V2.4.2 تحديث كل الفريمات والجدول كل دقيقة
+  timer = setInterval(()=>refreshAllLive(false), TABLE_REFRESH_MS); // V2.4.2 تحديث كل الفريمات والجدول كل 15 ثانية
   window.addEventListener('resize', ()=>draw(tfResults[INTERVAL]?.ind || {}));
 }
 async function fetchInterval(interval, force=false){
@@ -1608,7 +1618,7 @@ async function refreshTable(force=false){
     if(errors.length){
       setStatus('تم تحميل بعض الفريمات، وفشل البعض: '+errors.join(' | '), false);
     }else{
-      setStatus('تم تحديث كل الفريمات من Twelve Data بنجاح. التحديث القادم بعد دقيقة.', true);
+      setStatus('تم تحديث كل الفريمات من Twelve Data بنجاح. التحديث القادم بعد 15 ثانية.', true);
     }
   }catch(e){
     els('sourceLabel').textContent = 'API Error';

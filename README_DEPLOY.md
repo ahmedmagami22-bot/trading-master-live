@@ -236,3 +236,11 @@ Required before production use:
 - Fixed JavaScript syntax error: duplicate incomplete `async function refreshTable` lines.
 - Removed unused frontend `fetchLivePrice` helper.
 - Removes frontend token dependency from market-data fetch.
+
+## V2.5.1 Stable 15s Refresh
+- Changed all-frame refresh loop from 60 seconds to 15 seconds.
+- Multi-timeframe table updates every 15 seconds.
+- Keeps Syntax Fix from V2.5.0.
+- Keeps Supabase login and central PIPS.
+- Keeps Demo Mode disabled.
+- Recommended Vercel env for this version: `TWELVE_CACHE_MS=10000`.
