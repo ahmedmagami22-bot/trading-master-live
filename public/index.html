@@ -1357,8 +1357,8 @@ try{
     </section>
     <section class="actions">
       <div class="keyRow"><div class="backendBadge">Secure Backend Mode — Signal Engine</div><button class="btn" id="refreshNow">Refresh</button></div>
-      <div class="miniActions"><span>تحديث لحظي تقريبي لكل الفريمات والجدول كل 5 ثواني + صافي مركزي حقيقي من Supabase.</span></div>
-      <div class="warnbox">مهم: النظام الآن يعمل بتحديث سريع لكل الفريمات والجدول كل 5 ثواني من السعر الحقيقي عبر Backend Cache. لو بيانات الشموع نفسها لم تتغير من Twelve Data فلن تتغير الأرقام إلا عند وصول Candle/Price جديد من المصدر.</div>
+      <div class="miniActions"><span>تحديث لحظي تقريبي لكل الفريمات والجدول كل دقيقة + صافي مركزي حقيقي من Supabase.</span></div>
+      <div class="warnbox">مهم: النظام الآن يعمل بتحديث مستقر لكل الفريمات والجدول كل دقيقة من السعر الحقيقي عبر Backend Cache. لو بيانات الشموع نفسها لم تتغير من Twelve Data فلن تتغير الأرقام إلا عند وصول Candle/Price جديد من المصدر.</div>
     </section>
   </div>
 
@@ -1450,7 +1450,7 @@ try{
   <section class="card fullTableCard">
 
       <section class="card">
-        <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Live updates every 5 seconds</h2><small>متابعة لحظية للإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
+        <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Live updates every 60 seconds</h2><small>متابعة لحظية للإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
         <div class="perfTable"><div class="summaryStrip" id="summaryStrip"></div><div class="mtfWrap"><div class="tfGrid" id="tfGrid"></div></div></div>
         <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. السعر ومناطق الدخول مبنية على Twelve Data Time Series الحقيقي. تم إيقاف الديمو، وفشل Price API لا يوقف الداشبورد.</div>
   </section>
@@ -1463,9 +1463,9 @@ const ALL_TF = [
 ];
 const ENTRY_LIMIT = { '5min':3, '15min':5, '1h':8, '4h':12, '1day':15 };
 let INTERVAL = localStorage.getItem('tm_interval') || '15min';
-const ACTIVE_REFRESH_MS = 5 * 1000;           // V2.4.1 تحديث لحظي تقريبي كل 5 ثواني
-const TABLE_REFRESH_MS = 5 * 1000;            // V2.4.1 تحديث كل الفريمات والجدول كل 5 ثواني
-const CLIENT_CACHE_MS = 0;                    // V2.4.0 لا يوجد كاش محلي حتى تظهر آخر بيانات من الباك إند
+const ACTIVE_REFRESH_MS = 60 * 1000;          // V2.4.8 تحديث مستقر كل دقيقة           // V2.4.1 تحديث لحظي تقريبي كل دقيقة
+const TABLE_REFRESH_MS = 60 * 1000;           // V2.4.8 تحديث كل الفريمات والجدول كل دقيقة            // V2.4.1 تحديث كل الفريمات والجدول كل دقيقة
+const CLIENT_CACHE_MS = 0;                    // لا يوجد كاش محلي                    // V2.4.0 لا يوجد كاش محلي حتى تظهر آخر بيانات من الباك إند
 let candles = [];
 let timer = null;
 let tableTimer = null;
@@ -1500,8 +1500,8 @@ function init(){
   els('copySignal').onclick = async()=>{try{await navigator.clipboard.writeText(lastSignalText || 'No signal yet');setStatus('تم نسخ الإشارة.', true)}catch(e){setStatus('لم يتم النسخ تلقائيًا. انسخ الإشارة يدويًا.', false)}};
   setInterval(()=>{els('clock').textContent=nowClock()},1000); els('clock').textContent=nowClock();
 
-  refreshAllLive(true);               // V2.4.2 أول تحميل لكل الفريمات والجدول
-  timer = setInterval(()=>refreshAllLive(false), TABLE_REFRESH_MS); // V2.4.2 تحديث كل الفريمات والجدول كل 5 ثواني
+  refreshAllLive(true);               // V2.4.8 أول تحميل لكل الفريمات والجدول
+  timer = setInterval(()=>refreshAllLive(false), TABLE_REFRESH_MS); // V2.4.2 تحديث كل الفريمات والجدول كل دقيقة
   window.addEventListener('resize', ()=>draw(tfResults[INTERVAL]?.ind || {}));
 }
 async function fetchInterval(interval, force=false){
@@ -1586,7 +1586,7 @@ async function refreshTable
 
 async function refreshTable(force=false){
   try{
-    setStatus('جاري تحديث كل الفريمات من Twelve Data Time Series...', true);
+    setStatus('جاري تحديث كل الفريمات من Twelve Data Time Series كل دقيقة...', true);
 
     // V2.4.6:
     // لا نعطل الداشبورد بسبب endpoint السعر اللحظي.
@@ -1635,7 +1635,7 @@ async function refreshTable(force=false){
     if(errors.length){
       setStatus('تم تحديث الفريمات المتاحة، لكن بعض الفريمات فشلت: '+errors.join(' | '), false);
     }else{
-      setStatus('تم تحديث كل الفريمات من بيانات السوق الحقيقية. لا يوجد Demo Mode.', true);
+      setStatus('تم تحديث كل الفريمات من بيانات السوق الحقيقية. التحديث القادم بعد دقيقة.', true);
     }
   }catch(e){
     els('sourceLabel').textContent = 'API Error';

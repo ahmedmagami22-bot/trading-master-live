@@ -215,3 +215,11 @@ Required before production use:
 - `/api/trade-events` remains protected for central PIPS recording.
 - `/api/twelvedata` no longer verifies Supabase session on every 5-second polling request, because this caused 401 loops with multi-timeframe polling.
 - Adds `/api/health` to check environment variables without exposing secrets.
+
+## V2.4.8 Stable 60s Refresh
+- Changed all-frame refresh loop from 5 seconds to 60 seconds.
+- Multi-timeframe table updates every 60 seconds.
+- Keeps Supabase login and central PIPS.
+- Keeps Demo Mode disabled.
+- Backend cache default changed to 30 seconds if `TWELVE_CACHE_MS` is not set.
+- Recommended Vercel env: `TWELVE_CACHE_MS=30000` for this stable mode.

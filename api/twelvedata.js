@@ -1,4 +1,4 @@
-const MEMORY_CACHE_MS = Number(process.env.TWELVE_CACHE_MS || 3000); // set 3000 in Vercel, can use 2000-5000
+const MEMORY_CACHE_MS = Number(process.env.TWELVE_CACHE_MS || 30000); // V2.4.8 default backend cache 30 seconds
 const memoryCache = globalThis.__tmTwelveCache || (globalThis.__tmTwelveCache = new Map());
 
 export default async function handler(req, res) {
