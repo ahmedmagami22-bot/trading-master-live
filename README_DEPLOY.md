@@ -223,3 +223,11 @@ Required before production use:
 - Keeps Demo Mode disabled.
 - Backend cache default changed to 30 seconds if `TWELVE_CACHE_MS` is not set.
 - Recommended Vercel env: `TWELVE_CACHE_MS=30000` for this stable mode.
+
+## V2.4.9 Frontend Data Fix
+- Removes frontend Supabase-token dependency for `/api/twelvedata` calls.
+- `/api/twelvedata` remains server-side and only exposes market data, not secrets.
+- Fetches timeframes sequentially to reduce burst/rate issues.
+- Uses outputsize=120 instead of 260 for more stable polling.
+- Shows partial data if at least one timeframe succeeds.
+- Keeps Supabase login and central PIPS.

@@ -1342,6 +1342,16 @@ try{
 }catch(e){}
 </script>
 
+
+<script>
+try{
+  if(localStorage.getItem('tm_sync_version') !== 'v249'){
+    sessionStorage.clear();
+    localStorage.setItem('tm_sync_version','v249');
+  }
+}catch(e){}
+</script>
+
 </head>
 <body>
 <div class="wrap">
@@ -1450,7 +1460,7 @@ try{
   <section class="card fullTableCard">
 
       <section class="card">
-        <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Live updates every 60 seconds</h2><small>متابعة لحظية للإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
+        <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Stable updates every 60 seconds</h2><small>متابعة لحظية للإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
         <div class="perfTable"><div class="summaryStrip" id="summaryStrip"></div><div class="mtfWrap"><div class="tfGrid" id="tfGrid"></div></div></div>
         <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. السعر ومناطق الدخول مبنية على Twelve Data Time Series الحقيقي. تم إيقاف الديمو، وفشل Price API لا يوقف الداشبورد.</div>
   </section>
@@ -1520,10 +1530,8 @@ async function fetchInterval(interval, force=false){
   if(inFlight[interval]) return inFlight[interval];
 
   inFlight[interval] = (async()=>{
-    const url = `/api/twelvedata?symbol=${encodeURIComponent('XAU/USD')}&interval=${encodeURIComponent(interval)}&outputsize=260&ts=${Date.now()}`;
-    const token = await getAccessToken();
-    if(!token){ location.replace('/login.html'); throw new Error('Not logged in'); }
-    const res = await fetch(url, { cache: 'no-store', headers: { Authorization: `Bearer ${token}` } });
+    const url = `/api/twelvedata?symbol=${encodeURIComponent('XAU/USD')}&interval=${encodeURIComponent(interval)}&outputsize=120&ts=${Date.now()}`;
+    const res = await fetch(url, { cache: 'no-store' });
     const data = await res.json();
     if(!res.ok || data.status === 'error' || data.code || !data.values) throw new Error(data.message || data.error || 'API error');
     const arr = data.values.map(v=>({t:v.datetime,o:num(v.open),h:num(v.high),l:num(v.low),c:num(v.close),v:num(v.volume||0)})).filter(x=>Number.isFinite(x.c)).reverse();
@@ -1553,30 +1561,18 @@ async function refreshAllLive(force=false){
 
 async function refreshActive(force=false){
   try{
-    setStatus('جاري تحديث الفريم النشط من Twelve Data Time Series...', true);
+    setStatus('جاري تحديث الفريم النشط من Twelve Data...', true);
     const data = await fetchInterval(INTERVAL, true);
-
-    try{
-      const oneMin = await fetchInterval('1min', true);
-      if(oneMin && oneMin.length && data && data.length){
-        const p = oneMin[oneMin.length-1].c;
-        const last = data[data.length-1];
-        last.c = p;
-        last.h = Math.max(last.h, p);
-        last.l = Math.min(last.l, p);
-      }
-    }catch(e){}
-
     tfResults[INTERVAL] = analyzeData(data, INTERVAL);
     lastActiveUpdate = new Date();
     els('sourceLabel').textContent = window.tmUserEmail ? 'Real Market • '+window.tmUserEmail : 'Real Market';
     updateActiveFromResults();
     renderTfTable();
     syncTradeEvents();
-    setStatus('تم تحديث الفريم النشط من بيانات السوق الحقيقية. لا يوجد Demo Mode.', true);
+    setStatus('تم تحديث الفريم النشط بنجاح.', true);
   }catch(e){
     els('sourceLabel').textContent = 'API Error';
-    setStatus('خطأ في جلب بيانات الفريم النشط: '+e.message+' — لن يتم تشغيل ديمو.', false);
+    setStatus('خطأ في جلب بيانات الفريم النشط: '+e.message, false);
   }
 }
 
@@ -1584,46 +1580,29 @@ async function refreshTable
 
 async function refreshTable
 
-async function refreshTable(force=false){
-  try{
-    setStatus('جاري تحديث كل الفريمات من Twelve Data Time Series كل دقيقة...', true);
+async function refreshTable
 
-    // V2.4.6:
-    // لا نعطل الداشبورد بسبب endpoint السعر اللحظي.
-    // المصدر الأساسي الآن هو time_series لكل الفريمات + فريم 1 دقيقة لآخر سعر.
-    let livePrice = null;
-    try{
-      const oneMin = await fetchInterval('1min', true);
-      if(oneMin && oneMin.length) livePrice = oneMin[oneMin.length-1].c;
-    }catch(priceErr){
-      console.warn('1min live price failed, will use active/latest candle close', priceErr);
+async function refreshTable(force=false){
+  const errors = [];
+  let loaded = 0;
+
+  try{
+    setStatus('جاري تحديث الفريمات من Twelve Data...', true);
+
+    for (const [tf] of ALL_TF){
+      try{
+        const data = await fetchInterval(tf, true);
+        if(data && data.length){
+          tfResults[tf] = analyzeData(data, tf);
+          loaded++;
+        }
+      }catch(err){
+        errors.push(`${tf}: ${err.message || err}`);
+      }
     }
 
-    const settled = await Promise.allSettled(
-      ALL_TF.map(async ([tf]) => [tf, await fetchInterval(tf, true)])
-    );
-
-    const errors = [];
-    settled.forEach((item, idx)=>{
-      const tf = ALL_TF[idx][0];
-      if(item.status === 'fulfilled'){
-        const [okTf, data] = item.value;
-        if(data && data.length){
-          const last = data[data.length-1];
-          const p = Number.isFinite(livePrice) ? livePrice : last.c;
-          // نستخدم السعر الأحدث فقط في close الحالي، مع الحفاظ على شموع الفريم نفسها.
-          last.c = p;
-          last.h = Math.max(last.h, p);
-          last.l = Math.min(last.l, p);
-        }
-        tfResults[okTf] = analyzeData(data, okTf);
-      }else{
-        errors.push(`${tf}: ${item.reason?.message || item.reason || 'failed'}`);
-      }
-    });
-
-    if(!Object.keys(tfResults).length){
-      throw new Error(errors.join(' | ') || 'No timeframe data returned');
+    if(!loaded){
+      throw new Error(errors.join(' | ') || 'No data loaded');
     }
 
     lastTableUpdate = new Date();
@@ -1633,13 +1612,13 @@ async function refreshTable(force=false){
     syncTradeEvents();
 
     if(errors.length){
-      setStatus('تم تحديث الفريمات المتاحة، لكن بعض الفريمات فشلت: '+errors.join(' | '), false);
+      setStatus('تم تحميل بعض الفريمات، وفشل البعض: '+errors.join(' | '), false);
     }else{
-      setStatus('تم تحديث كل الفريمات من بيانات السوق الحقيقية. التحديث القادم بعد دقيقة.', true);
+      setStatus('تم تحديث كل الفريمات من Twelve Data بنجاح. التحديث القادم بعد دقيقة.', true);
     }
   }catch(e){
     els('sourceLabel').textContent = 'API Error';
-    setStatus('خطأ في جلب بيانات السوق الحقيقي: '+e.message+' — لن يتم تشغيل ديمو حتى لا تظهر أرقام غير مطابقة للسوق.', false);
+    setStatus('خطأ في جلب بيانات السوق: '+e.message+'. افتح /api/twelvedata للتأكد من الداتا.', false);
   }
 }
 
