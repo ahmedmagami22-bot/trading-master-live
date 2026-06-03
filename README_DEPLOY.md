@@ -193,3 +193,11 @@ Required before production use:
 - Merges live price into the latest candle for every timeframe.
 - Refreshes all timeframes every 5 seconds, not just missing/active frames.
 - If Twelve Data fails, dashboard shows API Error instead of fake values.
+
+## V2.4.5 Real Price Fallback
+- Fixes API Error when Twelve Data `/price` endpoint rejects XAU/USD.
+- `/api/twelvedata?endpoint=price` now tries:
+  1. Twelve Data `/price`
+  2. Fallback to latest `1min` time_series close
+- Demo Mode remains disabled.
+- Dashboard will not display fake prices.
