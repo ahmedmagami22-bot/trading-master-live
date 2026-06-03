@@ -1342,13 +1342,13 @@ try{
         <h1>Trading Master Live Dashboard — XAU/USD</h1>
         <p>شارت مباشر + تحليل فني تلقائي + SMC + Elliott Wave + FVG + BOS — Backend آمن بدون إظهار API Key.</p>
         <div class="intro">الهدف من هذه النسخة هو تحسين جودة الإشارات من خلال دمج الاتجاه العام، كسر البنية BOS، الفجوات السعرية FVG، موجات إليوت، وتحديد مناطق دخول ضيقة حسب كل فريم.</div>
-        <div class="livePill"><span class="dot"></span><span id="sourceLabel">Demo Mode</span><span id="clock">--:--:--</span></div>
+        <div class="livePill"><span class="dot"></span><span id="sourceLabel">API Error</span><span id="clock">--:--:--</span></div>
       </div>
     </section>
     <section class="actions">
       <div class="keyRow"><div class="backendBadge">Secure Backend Mode — Signal Engine</div><button class="btn" id="refreshNow">Refresh</button></div>
       <div class="miniActions"><span>تحديث لحظي تقريبي لكل الفريمات والجدول كل 5 ثواني + صافي مركزي حقيقي من Supabase.</span></div>
-      <div class="warnbox">مهم: النظام الآن يعمل بتحديث سريع لكل الفريمات والجدول كل 5 ثواني عبر Backend Cache. لو بيانات الشموع نفسها لم تتغير من Twelve Data فلن تتغير الأرقام إلا عند وصول Candle/Price جديد من المصدر.</div>
+      <div class="warnbox">مهم: النظام الآن يعمل بتحديث سريع لكل الفريمات والجدول كل 5 ثواني من السعر الحقيقي عبر Backend Cache. لو بيانات الشموع نفسها لم تتغير من Twelve Data فلن تتغير الأرقام إلا عند وصول Candle/Price جديد من المصدر.</div>
     </section>
   </div>
 
@@ -1442,7 +1442,7 @@ try{
       <section class="card">
         <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Live updates every 5 seconds</h2><small>متابعة لحظية للإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
         <div class="perfTable"><div class="summaryStrip" id="summaryStrip"></div><div class="mtfWrap"><div class="tfGrid" id="tfGrid"></div></div></div>
-        <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. صافي اليوم/الشهر يتم حفظه مركزيًا في Supabase. بعد التصفير يبدأ الحساب من البيانات الحية الحالية فقط، ولا يتم احتساب شموع قديمة.</div>
+        <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. السعر ومناطق الدخول مبنية على السعر الحقيقي من Twelve Data Price API مع شموع Time Series. تم إيقاف Demo Mode حتى لا تظهر أرقام غير مطابقة للسوق.</div>
   </section>
   <div class="foot">Trading Master • Educational technical dashboard • Not financial advice • Signal Engine</div>
 </div>
@@ -1527,44 +1527,69 @@ async function fetchInterval(interval, force=false){
 }
 
 
+async function fetchLivePrice(force=false){
+  const token = await getAccessToken();
+  if(!token){ location.replace('/login.html'); throw new Error('Not logged in'); }
+  const url = `/api/twelvedata?symbol=${encodeURIComponent('XAU/USD')}&endpoint=price&ts=${Date.now()}`;
+  const res = await fetch(url, { cache:'no-store', headers:{ Authorization:`Bearer ${token}` } });
+  const data = await res.json();
+  if(!res.ok || data.status==='error' || data.code || !data.price) throw new Error(data.message || 'Price API error');
+  return Number(data.price);
+}
+
 async function refreshAllLive(force=false){
-  // V2.4.0: تحديث كل الفريمات دفعة واحدة ثم تحديث الشارت والجدول من نفس Snapshot.
   await refreshTable(force);
-  updateActiveFromResults();
 }
 
 async function refreshActive(force=false){
   try{
-    setStatus('جاري تحديث الفريم النشط فقط لتقليل استهلاك API...', true);
-    const data = await fetchInterval(INTERVAL, force);
+    setStatus('جاري تحديث الفريم النشط من السعر الحقيقي...', true);
+    const [livePrice, data] = await Promise.all([fetchLivePrice(force), fetchInterval(INTERVAL, true)]);
+    if(data && data.length){
+      const last = data[data.length-1];
+      last.c = livePrice;
+      last.h = Math.max(last.h, livePrice);
+      last.l = Math.min(last.l, livePrice);
+    }
     tfResults[INTERVAL] = analyzeData(data, INTERVAL);
     lastActiveUpdate = new Date();
-    els('sourceLabel').textContent = window.tmUserEmail ? 'Secure Live • '+window.tmUserEmail : 'Secure Live';
+    els('sourceLabel').textContent = window.tmUserEmail ? 'Real Market • '+window.tmUserEmail : 'Real Market';
     updateActiveFromResults();
     renderTfTable();
-    setStatus('تم تحديث الفريم النشط بنجاح. جدول الفريمات يتحدث كل 15 دقيقة.', true);
+    syncTradeEvents();
+    setStatus('تم تحديث الفريم النشط من السعر الحقيقي. لا يوجد API Error.', true);
   }catch(e){
-    els('sourceLabel').textContent = 'Demo Mode';
-    setStatus('تعذر جلب بيانات الفريم النشط: '+e.message+' — تم تشغيل الديمو.', false);
-    useDemo();
+    els('sourceLabel').textContent = 'API Error';
+    setStatus('خطأ في جلب السعر الحقيقي: '+e.message+' — لن يتم تشغيل ديمو.', false);
   }
 }
 
+async function refreshTable
+
 async function refreshTable(force=false){
   try{
-    setStatus('جاري تحديث جدول الفريمات من السيرفر الآمن...', true);
-    const missing = ALL_TF.filter(([tf])=>force || !tfResults[tf] || tf===INTERVAL);
-    const pairs = await Promise.all(missing.map(async ([tf])=>[tf, await fetchInterval(tf, force)]));
-    pairs.forEach(([tf, data])=>{ tfResults[tf] = analyzeData(data, tf); });
+    setStatus('جاري تحديث كل الفريمات والسعر الحقيقي من Twelve Data...', true);
+    const livePrice = await fetchLivePrice(force);
+    const pairs = await Promise.all(ALL_TF.map(async ([tf])=>[tf, await fetchInterval(tf, true)]));
+    pairs.forEach(([tf, data])=>{
+      // دمج آخر سعر حقيقي داخل آخر شمعة حتى لا تعرض الداشبورد Close قديم أو Demo.
+      if(data && data.length){
+        const last = data[data.length-1];
+        last.c = livePrice;
+        last.h = Math.max(last.h, livePrice);
+        last.l = Math.min(last.l, livePrice);
+      }
+      tfResults[tf] = analyzeData(data, tf);
+    });
     lastTableUpdate = new Date();
-    els('sourceLabel').textContent = window.tmUserEmail ? 'Secure Live • '+window.tmUserEmail : 'Secure Live';
+    els('sourceLabel').textContent = window.tmUserEmail ? 'Real Market • '+window.tmUserEmail : 'Real Market';
     updateActiveFromResults();
     renderTfTable();
-    setStatus('تم تحديث جدول الفريمات بنجاح. التحديث القادم للجدول بعد 15 دقيقة.', true);
+    syncTradeEvents();
+    setStatus('تم تحديث كل الفريمات والجدول من السعر الحقيقي. لا يوجد API Error.', true);
   }catch(e){
-    els('sourceLabel').textContent = 'Demo Mode';
-    setStatus('تعذر تحديث جدول الفريمات: '+e.message+' — تم تشغيل الديمو.', false);
-    useDemo();
+    els('sourceLabel').textContent = 'API Error';
+    setStatus('خطأ في جلب بيانات السوق الحقيقي: '+e.message+' — لن يتم تشغيل ديمو حتى لا تظهر أرقام غير مطابقة للسوق.', false);
   }
 }
 

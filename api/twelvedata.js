@@ -29,11 +29,38 @@ const apiKey = process.env.TWELVE_DATA_API_KEY;
 
   const allowedIntervals = new Set(['1min', '5min', '15min', '30min', '1h', '4h', '1day']);
   const symbol = String(req.query.symbol || 'XAU/USD');
+  const endpoint = String(req.query.endpoint || 'time_series');
   const interval = String(req.query.interval || '15min');
   const outputsize = Math.min(Math.max(parseInt(req.query.outputsize || '160', 10), 40), 500);
 
   if (symbol !== 'XAU/USD') {
     return res.status(400).json({ status: 'error', message: 'Only XAU/USD is enabled in this POC' });
+  }
+
+  if (endpoint === 'price') {
+    const priceUrl = new URL('https://api.twelvedata.com/price');
+    priceUrl.searchParams.set('symbol', symbol);
+    priceUrl.searchParams.set('apikey', apiKey);
+    const priceCacheKey = `${symbol}:price`;
+    const cachedPrice = memoryCache.get(priceCacheKey);
+    if (cachedPrice && (Date.now() - cachedPrice.ts) < MEMORY_CACHE_MS) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, max-age=0, must-revalidate');
+      res.setHeader('X-TM-Cache', 'price-memory-hit');
+      return res.status(200).json(cachedPrice.data);
+    }
+    try {
+      const upstream = await fetch(priceUrl.toString(), { headers: { 'Accept': 'application/json' } });
+      const data = await upstream.json();
+      if (!upstream.ok || data.status === 'error' || data.code || !data.price) {
+        return res.status(502).json({ status: 'error', message: data.message || 'Twelve Data price upstream error' });
+      }
+      memoryCache.set(priceCacheKey, { ts: Date.now(), data });
+      res.setHeader('Cache-Control', 'no-store, no-cache, max-age=0, must-revalidate');
+      res.setHeader('X-TM-Cache', 'price-fresh');
+      return res.status(200).json(data);
+    } catch (err) {
+      return res.status(500).json({ status: 'error', message: err.message || 'Server error' });
+    }
   }
   if (!allowedIntervals.has(interval)) {
     return res.status(400).json({ status: 'error', message: 'Invalid interval' });

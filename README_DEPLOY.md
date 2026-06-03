@@ -186,3 +186,10 @@ Required before production use:
 - Prevents historical candles from immediately re-creating TP/SL events after `truncate trade_events`.
 - After reset, the table starts from live/current data only.
 - This helps validate the dashboard from a clean zero state.
+
+## V2.4.4 Real Market No Demo
+- Disabled Demo Mode fallback to prevent fake/non-market prices.
+- Added Twelve Data `price` endpoint for the live current price.
+- Merges live price into the latest candle for every timeframe.
+- Refreshes all timeframes every 5 seconds, not just missing/active frames.
+- If Twelve Data fails, dashboard shows API Error instead of fake values.
