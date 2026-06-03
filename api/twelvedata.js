@@ -2,27 +2,11 @@ const MEMORY_CACHE_MS = Number(process.env.TWELVE_CACHE_MS || 3000); // set 3000
 const memoryCache = globalThis.__tmTwelveCache || (globalThis.__tmTwelveCache = new Map());
 
 export default async function handler(req, res) {
-  const supabaseUrl = process.env.SUPABASE_URL || 'https://boofaksowdohnzapcwhr.supabase.co';
-  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'sb_publishable_JdMEz9pwOafCtTUz6PBS0A_eEAQS5qA';
-  const authHeader = req.headers.authorization || '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
-
-  if (!token) {
-    return res.status(401).json({ status: 'error', message: 'Missing Supabase auth token' });
-  }
-
-  const authCheck = await fetch(`${supabaseUrl}/auth/v1/user`, {
-    headers: {
-      apikey: supabaseAnonKey,
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  if (!authCheck.ok) {
-    return res.status(401).json({ status: 'error', message: 'Invalid or expired session' });
-  }
-
-const apiKey = process.env.TWELVE_DATA_API_KEY;
+  // V2.4.7:
+  // Twelve Data endpoint no longer validates Supabase token on every polling request.
+  // The dashboard page itself is still protected by Supabase login.
+  // This prevents 401 loops when 5 timeframes are polled every 5 seconds.
+  const apiKey = process.env.TWELVE_DATA_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ status: 'error', message: 'Missing TWELVE_DATA_API_KEY on server' });
   }

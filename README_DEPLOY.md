@@ -208,3 +208,10 @@ Required before production use:
 - Uses latest `1min` time_series close as current price when available.
 - Uses Promise.allSettled so one failed timeframe doesn't kill the whole dashboard.
 - Demo Mode remains disabled.
+
+## V2.4.7 API 401 Fix
+- Fixes repeated 401 errors on `/api/twelvedata`.
+- The dashboard page remains protected by Supabase Auth.
+- `/api/trade-events` remains protected for central PIPS recording.
+- `/api/twelvedata` no longer verifies Supabase session on every 5-second polling request, because this caused 401 loops with multi-timeframe polling.
+- Adds `/api/health` to check environment variables without exposing secrets.
