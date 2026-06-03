@@ -109,3 +109,66 @@ Sign up is not exposed in the dashboard login page.
 - Removed the old `/api/check-auth` page guard that was conflicting with Supabase Auth.
 - Stabilized Supabase session persistence using localStorage, autoRefreshToken and detectSessionInUrl.
 - Fixed redirect loop between `/` and `/login.html`.
+
+
+## V2.3.8 Table Sync Fix
+- Fixed table mismatch between devices.
+- Removed localStorage dependency for tradeState, which was causing each device to calculate different table results.
+- Demo data is now deterministic across devices.
+- Clears old local trade state once on first load.
+- Note: Daily/Monthly PIPS are currently calculated from the current signal only. For real account-wide daily/monthly history, the next step is central storage in Supabase.
+
+
+## V2.3.9 Real Central PIPS via Supabase
+
+### Supabase SQL
+Run this in Supabase SQL Editor:
+
+```sql
+create table if not exists public.trade_events (
+  event_key text primary key,
+  tf text not null,
+  signal_key text not null,
+  event_type text not null,
+  sig text,
+  pips integer not null default 0,
+  day text not null,
+  month text not null,
+  source_email text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists trade_events_day_idx on public.trade_events(day);
+create index if not exists trade_events_month_idx on public.trade_events(month);
+create index if not exists trade_events_tf_idx on public.trade_events(tf);
+
+alter table public.trade_events enable row level security;
+```
+
+### Vercel Secret
+Add:
+- SUPABASE_SERVICE_ROLE_KEY
+
+Keep it server-side only. Never expose it publicly.
+
+
+## V2.4.0 Live All Frames
+- All timeframes update together every 5 seconds.
+- The table updates every 5 seconds from the same data snapshot.
+- Active chart updates from the refreshed timeframe set.
+- Backend memory cache defaults to 3 seconds via `TWELVE_CACHE_MS` to reduce duplicate upstream calls when multiple clients open the dashboard.
+- Because Twelve Data REST candle data typically updates around minute-level, this is near-live polling. True tick-by-tick streaming requires WebSocket integration.
+
+
+## V2.4.1 Live All Frames + Real Supabase PIPS
+This is the recommended base version:
+- All timeframes update together every 5 seconds.
+- Multi-timeframe table updates every 5 seconds.
+- Central real PIPS stored in Supabase `trade_events`.
+- Duplicate TP/SL events are prevented by `event_key`.
+- Backend Twelve Data memory cache defaults to 3 seconds via `TWELVE_CACHE_MS`.
+
+Required before production use:
+1. Create `trade_events` table in Supabase using SETUP_V241.md.
+2. Add `SUPABASE_SERVICE_ROLE_KEY` in Vercel.
+3. Add optional `TWELVE_CACHE_MS=3000` in Vercel.

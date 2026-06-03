@@ -1321,6 +1321,17 @@ async function logoutSupabase(){
 html:not(.auth-ok) body{visibility:hidden}
 </style>
 
+
+<script>
+try{
+  if(localStorage.getItem('tm_sync_version') !== 'v238'){
+    localStorage.removeItem('tm_v2_trade_state');
+    sessionStorage.clear();
+    localStorage.setItem('tm_sync_version','v238');
+  }
+}catch(e){}
+</script>
+
 </head>
 <body>
 <div class="wrap">
@@ -1336,7 +1347,7 @@ html:not(.auth-ok) body{visibility:hidden}
     </section>
     <section class="actions">
       <div class="keyRow"><div class="backendBadge">Secure Backend Mode — Signal Engine</div><button class="btn" id="refreshNow">Refresh</button></div>
-      <div class="miniActions"><span>الفريم النشط يتحدث كل دقيقة، وجدول الفريمات كل 15 دقيقة عبر Backend Cache لتقليل استهلاك API.</span></div>
+      <div class="miniActions"><span>تحديث لحظي تقريبي لكل الفريمات والجدول كل 5 ثواني + صافي مركزي حقيقي من Supabase.</span></div>
       <div class="warnbox">مهم: تم تحسين الاستهلاك؛ تحديث الفريم النشط كل دقيقة، وجدول الفريمات كل 15 دقيقة، مع Cache في الـ Backend. قبل إطلاق العملاء نحتاج Login + مراقبة استهلاك + خطة بيانات مناسبة.</div>
     </section>
   </div>
@@ -1429,9 +1440,9 @@ html:not(.auth-ok) body{visibility:hidden}
   <section class="card fullTableCard">
 
       <section class="card">
-        <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Updates every 15 minutes</h2><small>متابعة الإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
+        <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Live updates every 5 seconds</h2><small>متابعة لحظية للإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
         <div class="perfTable"><div class="summaryStrip" id="summaryStrip"></div><div class="mtfWrap"><div class="tfGrid" id="tfGrid"></div></div></div>
-        <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. الجدول تجريبي لحساب نتيجة الإشارة الحالية، وليس سجل صفقات محاسبي نهائي.</div>
+        <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. صافي اليوم/الشهر يتم حفظه مركزيًا في Supabase، لذلك يظهر موحدًا على كل الأجهزة ولا يتكرر احتساب الهدف مع تعدد المستخدمين.</div>
   </section>
   <div class="foot">Trading Master • Educational technical dashboard • Not financial advice • Signal Engine</div>
 </div>
@@ -1442,9 +1453,9 @@ const ALL_TF = [
 ];
 const ENTRY_LIMIT = { '5min':3, '15min':5, '1h':8, '4h':12, '1day':15 };
 let INTERVAL = localStorage.getItem('tm_interval') || '15min';
-const ACTIVE_REFRESH_MS = 60 * 1000;          // تحديث الفريم النشط كل دقيقة
-const TABLE_REFRESH_MS = 15 * 60 * 1000;      // تحديث جدول الفريمات كل 15 دقيقة
-const CLIENT_CACHE_MS = 55 * 1000;            // منع تكرار نفس الطلب داخل نفس الدقيقة
+const ACTIVE_REFRESH_MS = 5 * 1000;           // V2.4.1 تحديث لحظي تقريبي كل 5 ثواني
+const TABLE_REFRESH_MS = 5 * 1000;            // V2.4.1 تحديث كل الفريمات والجدول كل 5 ثواني
+const CLIENT_CACHE_MS = 0;                    // V2.4.0 لا يوجد كاش محلي حتى تظهر آخر بيانات من الباك إند
 let candles = [];
 let timer = null;
 let tableTimer = null;
@@ -1453,13 +1464,14 @@ let tfResults = {};
 let lastActiveUpdate = null;
 let lastTableUpdate = null;
 let inFlight = {};
-let tradeState = loadTradeState();
+let tradeState = {}; // V2.3.8: deterministic per current data, not per-device localStorage
+let centralPips = null; // V2.3.9: real shared PIPS from Supabase
 const fmt = n => Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const num = v => Number.parseFloat(v);
 const nowClock = () => new Date().toLocaleTimeString('en-GB',{hour12:false});
 const pip = dollars => Math.round((dollars || 0) * 10);
-function loadTradeState(){try{return JSON.parse(localStorage.getItem('tm_v2_trade_state')||'{}')}catch(e){return {}}}
-function saveTradeState(){localStorage.setItem('tm_v2_trade_state', JSON.stringify(tradeState));}
+function loadTradeState(){ return {}; }
+function saveTradeState(){ /* V2.3.8: disabled local device storage to keep all devices matched */ }
 function setStatus(msg, good=true){els('status').textContent = msg; els('status').style.color = good ? 'var(--green)' : 'var(--red)'}
 function init(){
   document.querySelectorAll('.tf button').forEach(btn=>{
@@ -1470,17 +1482,15 @@ function init(){
       INTERVAL=btn.dataset.interval;
       localStorage.setItem('tm_interval',INTERVAL);
       if(tfResults[INTERVAL]) updateActiveFromResults();
-      await refreshActive();
+      await refreshAllLive(false);
     });
   });
-  els('refreshNow').onclick = async()=>{ await refreshActive(true); };
+  els('refreshNow').onclick = async()=>{ await refreshAllLive(true); };
   els('copySignal').onclick = async()=>{try{await navigator.clipboard.writeText(lastSignalText || 'No signal yet');setStatus('تم نسخ الإشارة.', true)}catch(e){setStatus('لم يتم النسخ تلقائيًا. انسخ الإشارة يدويًا.', false)}};
   setInterval(()=>{els('clock').textContent=nowClock()},1000); els('clock').textContent=nowClock();
 
-  refreshTable(true);                 // أول تحميل: يجهز الجدول مرة واحدة
-  refreshActive(true);                // ثم يركز على الفريم النشط
-  timer = setInterval(()=>refreshActive(false), ACTIVE_REFRESH_MS);
-  tableTimer = setInterval(()=>refreshTable(false), TABLE_REFRESH_MS);
+  refreshAllLive(true);               // V2.4.0 أول تحميل لكل الفريمات
+  timer = setInterval(()=>refreshAllLive(false), TABLE_REFRESH_MS);
   window.addEventListener('resize', ()=>draw(tfResults[INTERVAL]?.ind || {}));
 }
 async function fetchInterval(interval, force=false){
@@ -1499,7 +1509,7 @@ async function fetchInterval(interval, force=false){
   if(inFlight[interval]) return inFlight[interval];
 
   inFlight[interval] = (async()=>{
-    const url = `/api/twelvedata?symbol=${encodeURIComponent('XAU/USD')}&interval=${encodeURIComponent(interval)}&outputsize=220`;
+    const url = `/api/twelvedata?symbol=${encodeURIComponent('XAU/USD')}&interval=${encodeURIComponent(interval)}&outputsize=260`;
     const token = await getAccessToken();
     if(!token){ location.replace('/login.html'); throw new Error('Not logged in'); }
     const res = await fetch(url, { cache: 'default', headers: { Authorization: `Bearer ${token}` } });
@@ -1513,6 +1523,13 @@ async function fetchInterval(interval, force=false){
 
   try{ return await inFlight[interval]; }
   finally{ delete inFlight[interval]; }
+}
+
+
+async function refreshAllLive(force=false){
+  // V2.4.0: تحديث كل الفريمات دفعة واحدة ثم تحديث الشارت والجدول من نفس Snapshot.
+  await refreshTable(force);
+  updateActiveFromResults();
 }
 
 async function refreshActive(force=false){
@@ -1553,15 +1570,29 @@ async function refreshTable(force=false){
 async function refresh(){
   await refreshActive(true);
 }
+function seededRand(seed){
+  let x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
 function useDemo(){
   tfResults={};
   ALL_TF.forEach(([tf], idx)=>{
-    const seed = 4565 + Math.sin(Date.now()/600000)*18 + idx*1.5;
+    // ثابت لكل الأجهزة، بدون Date وبدون Math.random، حتى لا تختلف أرقام الديمو من جهاز لجهاز.
+    const seed = 4565 + idx*1.5;
     let arr=[], p=seed-55;
-    for(let i=0;i<180;i++){const drift=Math.sin(i/13)*1.2+(i>85?1.15:.25);const o=p;const c=o+(Math.random()-.46)*6+drift;const h=Math.max(o,c)+Math.random()*5.5;const l=Math.min(o,c)-Math.random()*5.5;arr.push({t:String(i),o,h,l,c,v:0});p=c;}
+    for(let i=0;i<180;i++){
+      const r1=seededRand((idx+1)*1000+i*7), r2=seededRand((idx+2)*1000+i*11), r3=seededRand((idx+3)*1000+i*13);
+      const drift=Math.sin(i/13)*1.2+(i>85?1.15:.25);
+      const o=p;
+      const c=o+(r1-.46)*6+drift;
+      const h=Math.max(o,c)+r2*5.5;
+      const l=Math.min(o,c)-r3*5.5;
+      arr.push({t:String(i),o,h,l,c,v:0});
+      p=c;
+    }
     tfResults[tf]=analyzeData(arr,tf);
   });
-  updateActiveFromResults(); renderTfTable();
+  updateActiveFromResults(); renderTfTable(); syncTradeEvents();
 }
 function ema(arr, len){const k=2/(len+1); let out=[], prev=arr[0];arr.forEach((v,i)=>{prev=i===0?v:v*k+prev*(1-k);out.push(prev)});return out}
 function rsi(closes, len=14){let out=Array(closes.length).fill(null);for(let i=len;i<closes.length;i++){let gain=0,loss=0;for(let j=i-len+1;j<=i;j++){const d=closes[j]-closes[j-1]; if(d>=0)gain+=d;else loss-=d;}const rs=loss===0?100:gain/loss;out[i]=100-(100/(1+rs));}return out}
@@ -1614,6 +1645,46 @@ function addPips(s, amount){
   s.dailyPips = (s.dailyPips||0) + pts;
   s.monthlyPips = (s.monthlyPips||0) + pts;
 }
+
+function buildTradeEvents(){
+  const today = new Date().toISOString().slice(0,10);
+  const month = today.slice(0,7);
+  const events = [];
+  for (const [tf, s] of Object.entries(tradeState || {})){
+    if(!s || !s.key || s.sig==='WAIT') continue;
+    const base = { tf, signal_key:s.key, sig:s.sig, day:today, month };
+    const add = (type, pips) => events.push({ ...base, event_type:type, event_key:`${tf}:${s.key}:${type}`, pips:Math.round(pips || 0) });
+    if(s.tp1Hit) add('TP1', pip(signedTargetPips(s.sig,s.entryMid,s.tp1)));
+    if(s.tp2Hit) add('TP2', pip(signedTargetPips(s.sig,s.entryMid,s.tp2)));
+    if(s.tp3Hit) add('TP3', pip(signedTargetPips(s.sig,s.entryMid,s.tp3)));
+    if(s.stopped){
+      const stopPips = s.tp2Hit ? 0 : pip(signedTargetPips(s.sig,s.entryMid,s.sl));
+      add('SL', stopPips);
+    }
+  }
+  return events;
+}
+
+async function syncTradeEvents(){
+  try{
+    const token = await getAccessToken();
+    if(!token) return;
+    const res = await fetch('/api/trade-events', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
+      body: JSON.stringify({ events: buildTradeEvents() })
+    });
+    const data = await res.json().catch(()=>null);
+    if(data && data.ok && data.mode==='central'){
+      centralPips = data;
+      renderTfTable();
+      setStatus('تم تحديث صافي اليوم/الشهر الحقيقي من Supabase بنجاح.', true);
+    }else if(data && data.mode==='fallback'){
+      setStatus('الصافي المركزي غير مفعل: أضف SUPABASE_SERVICE_ROLE_KEY في Vercel.', false);
+    }
+  }catch(e){ console.warn('trade sync failed', e); }
+}
+
 function signedTargetPips(sig, entry, target){return sig==='BUY' ? target-entry : entry-target;}
 function createSignalState(x, prev={}){
   const today=new Date().toISOString().slice(0,10), month=today.slice(0,7);
@@ -1629,47 +1700,84 @@ function createSignalState(x, prev={}){
   };
 }
 function updateTradeState(x){
-  const key=x.tf, newKey=signalKey(x); let s=tradeState[key] || {};
-  s=normalizePeriods(s);
+  const key=x.tf;
 
-  // لو الصفقة مفعّلة، لا نغير منطقة الدخول ولا الاستوب ولا الأهداف مع تحديثات السعر.
-  const locked = s.active && s.triggered && !s.closed && !s.stopped;
-  if(!locked){
-    // بعد إغلاق TP3 أو Stop، لا نعيد نفس الإشارة بنفس المنطقة. ننتظر منطقة/إشارة جديدة.
-    const sameClosedPattern = (s.closed || s.stopped) && s.key===newKey;
-    if(x.sig==='WAIT'){
-      s = {...s, active:false, sig:'WAIT', key:newKey, distance:0, note:'لا توجد إشارة نشطة'};
-    }else if(!sameClosedPattern && (!s.key || s.key!==newKey || s.closed || s.stopped || s.sig==='WAIT')){
-      s = createSignalState(x, s);
-    }
+  // V2.3.8:
+  // الجدول أصبح محسوبًا من نفس بيانات الشموع الحالية فقط، بدون localStorage.
+  // هذا يمنع اختلاف النتائج بين جهاز وجهاز بسبب تاريخ جهاز قديم أو Refresh مختلف.
+  const s = createSignalState(x, {});
+  s.day = new Date().toISOString().slice(0,10);
+  s.month = s.day.slice(0,7);
+  s.dailyPips = 0;
+  s.monthlyPips = 0;
+
+  if(x.sig==='WAIT'){
+    s.active=false;
+    s.sig='WAIT';
+    s.key=signalKey(x);
+    s.distance=0;
+    s.note='لا توجد إشارة نشطة';
+    tradeState[key]=s;
+    return;
   }
 
-  if(s.active && !s.closed && !s.stopped){
-    const high=x.last.h, low=x.last.l, price=x.last.c;
-    const hitEntry = s.sig==='BUY' ? (low<=s.entryHigh && high>=s.entryLow) : (high>=s.entryLow && low<=s.entryHigh);
-    if(hitEntry && !s.triggered){s.triggered=true; s.triggeredAt=Date.now(); s.note='تم تفعيل الإشارة وتثبيت المنطقة والاستوب';}
+  const candles = Array.isArray(x.data) ? x.data.slice(-40) : [x.last];
+  let entered = false;
+  let stopped = false;
+  let tp1 = false, tp2 = false, tp3 = false;
+  let slToEntry = false;
+  let points = 0;
 
-    if(s.triggered){
-      if(s.sig==='BUY'){
-        if(!s.tp1Hit && high>=s.tp1){s.tp1Hit=true; addPips(s, signedTargetPips(s.sig,s.entryMid,s.tp1));}
-        if(!s.tp2Hit && high>=s.tp2){s.tp2Hit=true; addPips(s, signedTargetPips(s.sig,s.entryMid,s.tp2)); s.sl=s.entryMid; s.slToEntry=true;}
-        if(!s.tp3Hit && high>=s.tp3){s.tp3Hit=true; addPips(s, signedTargetPips(s.sig,s.entryMid,s.tp3)); s.closed=true; s.active=false; s.closedAt=Date.now(); s.note='تم تحقيق TP3 وإغلاق الصفقة بالكامل';}
-        if(!s.closed && low<=s.sl){s.stopped=true; s.active=false; s.closedAt=Date.now(); if(!s.tp2Hit) addPips(s, signedTargetPips(s.sig,s.entryMid,s.sl)); s.note='تم ضرب وقف الخسارة';}
-        s.distance = price - s.entryMid;
-      }else if(s.sig==='SELL'){
-        if(!s.tp1Hit && low<=s.tp1){s.tp1Hit=true; addPips(s, signedTargetPips(s.sig,s.entryMid,s.tp1));}
-        if(!s.tp2Hit && low<=s.tp2){s.tp2Hit=true; addPips(s, signedTargetPips(s.sig,s.entryMid,s.tp2)); s.sl=s.entryMid; s.slToEntry=true;}
-        if(!s.tp3Hit && low<=s.tp3){s.tp3Hit=true; addPips(s, signedTargetPips(s.sig,s.entryMid,s.tp3)); s.closed=true; s.active=false; s.closedAt=Date.now(); s.note='تم تحقيق TP3 وإغلاق الصفقة بالكامل';}
-        if(!s.closed && high>=s.sl){s.stopped=true; s.active=false; s.closedAt=Date.now(); if(!s.tp2Hit) addPips(s, signedTargetPips(s.sig,s.entryMid,s.sl)); s.note='تم ضرب وقف الخسارة';}
-        s.distance = s.entryMid - price;
+  for(const c of candles){
+    const high=c.h, low=c.l;
+
+    if(!entered){
+      const hitEntry = s.sig==='BUY'
+        ? (low<=s.entryHigh && high>=s.entryLow)
+        : (high>=s.entryLow && low<=s.entryHigh);
+      if(hitEntry){
+        entered=true;
+        s.triggered=true;
+        s.triggeredAt=Date.now();
+        s.note='تم تفعيل الإشارة';
+      }else{
+        continue;
       }
-    }else{
-      // قبل التفعيل: قياس البعد عن أقرب حد في منطقة الدخول.
-      if(s.sig==='BUY') s.distance = price<s.entryLow ? price-s.entryLow : price>s.entryHigh ? price-s.entryHigh : 0;
-      else s.distance = price>s.entryHigh ? s.entryHigh-price : price<s.entryLow ? s.entryLow-price : 0;
+    }
+
+    if(s.sig==='BUY'){
+      if(!tp1 && high>=s.tp1){ tp1=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp1)); }
+      if(!tp2 && high>=s.tp2){ tp2=true; slToEntry=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp2)); }
+      if(!tp3 && high>=s.tp3){ tp3=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp3)); break; }
+      const activeSl = slToEntry ? s.entryMid : s.sl;
+      if(!tp3 && low<=activeSl){ stopped=true; if(!tp2) points += pip(signedTargetPips(s.sig,s.entryMid,activeSl)); break; }
+    }else if(s.sig==='SELL'){
+      if(!tp1 && low<=s.tp1){ tp1=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp1)); }
+      if(!tp2 && low<=s.tp2){ tp2=true; slToEntry=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp2)); }
+      if(!tp3 && low<=s.tp3){ tp3=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp3)); break; }
+      const activeSl = slToEntry ? s.entryMid : s.sl;
+      if(!tp3 && high>=activeSl){ stopped=true; if(!tp2) points += pip(signedTargetPips(s.sig,s.entryMid,activeSl)); break; }
     }
   }
-  tradeState[key]=s; saveTradeState();
+
+  s.tp1Hit=tp1; s.tp2Hit=tp2; s.tp3Hit=tp3;
+  s.slToEntry=slToEntry;
+  s.stopped=stopped;
+  s.closed=tp3;
+  s.active=entered && !stopped && !tp3;
+  s.dailyPips=points;
+  s.monthlyPips=points; // مؤقتًا مطابق لليومي لحين عمل سجل مركزي في Supabase
+  if(!entered){
+    const price=x.last.c;
+    if(s.sig==='BUY') s.distance = price<s.entryLow ? price-s.entryLow : price>s.entryHigh ? price-s.entryHigh : 0;
+    else s.distance = price>s.entryHigh ? s.entryHigh-price : price<s.entryLow ? s.entryLow-price : 0;
+    s.note='لم تدخل المنطقة';
+  }else{
+    s.distance = s.sig==='BUY' ? x.last.c-s.entryMid : s.entryMid-x.last.c;
+    s.note = stopped ? 'تم ضرب الاستوب' : tp3 ? 'تم تحقيق TP3' : 'إشارة مفعلة';
+  }
+
+  tradeState[key]=s;
 }
 function displayStateFor(x){
   const s=tradeState[x.tf];
@@ -1738,8 +1846,8 @@ function renderSummary(){
   const activeSignals=states.filter(s=>s.active&&s.triggered&&!s.closed&&!s.stopped).length;
   const waitingSignals=states.filter(s=>s.active&&!s.triggered&&!s.closed&&!s.stopped).length;
   const tpHits=states.reduce((a,s)=>a+(s.tp1Hit?1:0)+(s.tp2Hit?1:0)+(s.tp3Hit?1:0),0);
-  const daily=states.reduce((a,s)=>a+(s.dailyPips||0),0);
-  const monthly=states.reduce((a,s)=>a+(s.monthlyPips||0),0);
+  const daily=centralPips?.totals?.daily ?? states.reduce((a,s)=>a+(s.dailyPips||0),0);
+  const monthly=centralPips?.totals?.monthly ?? states.reduce((a,s)=>a+(s.monthlyPips||0),0);
   const card=(label,value,cls='')=>`<div class="summaryCard"><div class="label">${label}</div><div class="value ${cls}">${value}</div></div>`;
   strip.innerHTML=[
     card('الإشارات النشطة',activeSignals,activeSignals?'green':'gold'),
@@ -1757,8 +1865,8 @@ function renderTfTable(){
   const yes=v=>`<span class="check ${v?'green':'red'}">${v?'✓':'×'}</span>`;
   const sigLabel=tf=>{const x=tfResults[tf],s=tradeState[tf]||{};if(!x)return'--';const sig=s.sig&&s.sig!=='WAIT'?s.sig:x.sig;const ar=sig==='BUY'?'شراء':sig==='SELL'?'بيع':'لا توجد';const cls=sig==='BUY'?'green':sig==='SELL'?'red':'gold';let note=s.triggered?'مفعّلة':(sig==='WAIT'?'انتظار':'لم تدخل المنطقة');if(s.closed)note='مغلقة TP3';if(s.stopped)note='Stop';return`<span class="mtfVal ${cls}">${ar}</span><span class="stateNote">${note}</span>`};
   const distance=tf=>{const s=tradeState[tf]||{};return s.distance!==undefined?`<span class="mtfVal ${(s.distance||0)>=0?'green':'red'}">${(s.distance>=0?'+':'')+fmt(s.distance)}$</span>`:'--'};
-  const daily=tf=>{const s=tradeState[tf]||{},v=s.dailyPips||0;return`<span class="mtfVal ${v>=0?'green':'red'}">${v>=0?'+':''}${v}</span>`};
-  const monthly=tf=>{const s=tradeState[tf]||{},v=s.monthlyPips||0;return`<span class="mtfVal ${v>=0?'green':'red'}">${v>=0?'+':''}${v}</span>`};
+  const daily=tf=>{const s=tradeState[tf]||{},v=(centralPips?.byTf?.[tf]?.daily ?? s.dailyPips ?? 0);return`<span class="mtfVal ${v>=0?'green':'red'}">${v>=0?'+':''}${v}</span>`};
+  const monthly=tf=>{const s=tradeState[tf]||{},v=(centralPips?.byTf?.[tf]?.monthly ?? s.monthlyPips ?? 0);return`<span class="mtfVal ${v>=0?'green':'red'}">${v>=0?'+':''}${v}</span>`};
   const lifecycle=tf=>{const s=tradeState[tf]||{};return`<div class="lifecycle"><span class="lifePill ${s.triggered?'done':''}">Entry</span><span class="lifePill ${s.tp1Hit?'done':''}">TP1</span><span class="lifePill ${s.tp2Hit?'done':''}">TP2</span><span class="lifePill ${s.slToEntry?'done':''}">BE</span><span class="lifePill ${s.tp3Hit?'done':''}">TP3</span><span class="lifePill ${s.stopped?'bad':''}">SL</span></div>`};
   const row=(name,fn)=>cell(name,'metric')+ALL_TF.map(([tf])=>cell(fn(tf))).join('');
   let html='<div class="mtfMatrix">';

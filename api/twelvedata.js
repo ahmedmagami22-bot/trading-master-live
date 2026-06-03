@@ -1,3 +1,6 @@
+const MEMORY_CACHE_MS = Number(process.env.TWELVE_CACHE_MS || 3000);
+const memoryCache = globalThis.__tmTwelveCache || (globalThis.__tmTwelveCache = new Map());
+
 export default async function handler(req, res) {
   const supabaseUrl = process.env.SUPABASE_URL || 'https://boofaksowdohnzapcwhr.supabase.co';
   const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'sb_publishable_JdMEz9pwOafCtTUz6PBS0A_eEAQS5qA';
@@ -42,6 +45,14 @@ const apiKey = process.env.TWELVE_DATA_API_KEY;
   url.searchParams.set('outputsize', String(outputsize));
   url.searchParams.set('apikey', apiKey);
 
+  const cacheKey = `${symbol}:${interval}:${outputsize}`;
+  const cached = memoryCache.get(cacheKey);
+  if (cached && (Date.now() - cached.ts) < MEMORY_CACHE_MS) {
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('X-TM-Cache', 'memory-hit');
+    return res.status(200).json(cached.data);
+  }
+
   try {
     const upstream = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
     const data = await upstream.json();
@@ -49,7 +60,9 @@ const apiKey = process.env.TWELVE_DATA_API_KEY;
       return res.status(502).json({ status: 'error', message: data.message || 'Twelve Data upstream error' });
     }
 
-    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=600');
+    memoryCache.set(cacheKey, { ts: Date.now(), data });
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('X-TM-Cache', 'fresh');
     return res.status(200).json(data);
   } catch (err) {
     return res.status(500).json({ status: 'error', message: err.message || 'Server error' });
