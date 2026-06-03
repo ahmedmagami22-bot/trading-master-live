@@ -1442,7 +1442,7 @@ try{
       <section class="card">
         <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Live updates every 5 seconds</h2><small>متابعة لحظية للإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
         <div class="perfTable"><div class="summaryStrip" id="summaryStrip"></div><div class="mtfWrap"><div class="tfGrid" id="tfGrid"></div></div></div>
-        <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. صافي اليوم/الشهر يتم حفظه مركزيًا في Supabase، لذلك يظهر موحدًا على كل الأجهزة ولا يتكرر احتساب الهدف مع تعدد المستخدمين.</div>
+        <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. صافي اليوم/الشهر يتم حفظه مركزيًا في Supabase. بعد التصفير يبدأ الحساب من البيانات الحية الحالية فقط، ولا يتم احتساب شموع قديمة.</div>
   </section>
   <div class="foot">Trading Master • Educational technical dashboard • Not financial advice • Signal Engine</div>
 </div>
@@ -1466,6 +1466,7 @@ let lastTableUpdate = null;
 let inFlight = {};
 let tradeState = {}; // V2.3.8: deterministic per current data, not per-device localStorage
 let centralPips = null; // V2.3.9: real shared PIPS from Supabase
+const LIVE_BASELINE_TS = Date.now(); // V2.4.3 ignore old candles before opening/reset
 const fmt = n => Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const num = v => Number.parseFloat(v);
 const nowClock = () => new Date().toLocaleTimeString('en-GB',{hour12:false});
@@ -1701,10 +1702,6 @@ function createSignalState(x, prev={}){
 }
 function updateTradeState(x){
   const key=x.tf;
-
-  // V2.3.8:
-  // الجدول أصبح محسوبًا من نفس بيانات الشموع الحالية فقط، بدون localStorage.
-  // هذا يمنع اختلاف النتائج بين جهاز وجهاز بسبب تاريخ جهاز قديم أو Refresh مختلف.
   const s = createSignalState(x, {});
   s.day = new Date().toISOString().slice(0,10);
   s.month = s.day.slice(0,7);
@@ -1721,60 +1718,47 @@ function updateTradeState(x){
     return;
   }
 
-  const candles = Array.isArray(x.data) ? x.data.slice(-40) : [x.last];
-  let entered = false;
-  let stopped = false;
-  let tp1 = false, tp2 = false, tp3 = false;
-  let slToEntry = false;
+  // V2.4.3:
+  // لا نحسب أي TP/SL من شموع قديمة بعد التصفير.
+  // نراقب فقط آخر شمعة/السعر الحالي من لحظة فتح الداشبورد، حتى يبدأ الصافي من الصفر فعلًا.
+  const c = x.last;
+  const high = c.h, low = c.l, price = c.c;
+
+  const hitEntry = s.sig==='BUY'
+    ? (low<=s.entryHigh && high>=s.entryLow)
+    : (high>=s.entryLow && low<=s.entryHigh);
+
   let points = 0;
 
-  for(const c of candles){
-    const high=c.h, low=c.l;
-
-    if(!entered){
-      const hitEntry = s.sig==='BUY'
-        ? (low<=s.entryHigh && high>=s.entryLow)
-        : (high>=s.entryLow && low<=s.entryHigh);
-      if(hitEntry){
-        entered=true;
-        s.triggered=true;
-        s.triggeredAt=Date.now();
-        s.note='تم تفعيل الإشارة';
-      }else{
-        continue;
-      }
-    }
+  if(hitEntry){
+    s.triggered=true;
+    s.triggeredAt=Date.now();
+    s.note='تم تفعيل الإشارة من البيانات الحية الحالية';
 
     if(s.sig==='BUY'){
-      if(!tp1 && high>=s.tp1){ tp1=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp1)); }
-      if(!tp2 && high>=s.tp2){ tp2=true; slToEntry=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp2)); }
-      if(!tp3 && high>=s.tp3){ tp3=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp3)); break; }
-      const activeSl = slToEntry ? s.entryMid : s.sl;
-      if(!tp3 && low<=activeSl){ stopped=true; if(!tp2) points += pip(signedTargetPips(s.sig,s.entryMid,activeSl)); break; }
+      if(high>=s.tp1){ s.tp1Hit=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp1)); }
+      if(high>=s.tp2){ s.tp2Hit=true; s.slToEntry=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp2)); }
+      if(high>=s.tp3){ s.tp3Hit=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp3)); s.closed=true; }
+      const activeSl = s.tp2Hit ? s.entryMid : s.sl;
+      if(!s.tp3Hit && low<=activeSl){ s.stopped=true; if(!s.tp2Hit) points += pip(signedTargetPips(s.sig,s.entryMid,activeSl)); }
     }else if(s.sig==='SELL'){
-      if(!tp1 && low<=s.tp1){ tp1=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp1)); }
-      if(!tp2 && low<=s.tp2){ tp2=true; slToEntry=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp2)); }
-      if(!tp3 && low<=s.tp3){ tp3=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp3)); break; }
-      const activeSl = slToEntry ? s.entryMid : s.sl;
-      if(!tp3 && high>=activeSl){ stopped=true; if(!tp2) points += pip(signedTargetPips(s.sig,s.entryMid,activeSl)); break; }
+      if(low<=s.tp1){ s.tp1Hit=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp1)); }
+      if(low<=s.tp2){ s.tp2Hit=true; s.slToEntry=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp2)); }
+      if(low<=s.tp3){ s.tp3Hit=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp3)); s.closed=true; }
+      const activeSl = s.tp2Hit ? s.entryMid : s.sl;
+      if(!s.tp3Hit && high>=activeSl){ s.stopped=true; if(!s.tp2Hit) points += pip(signedTargetPips(s.sig,s.entryMid,activeSl)); }
     }
-  }
-
-  s.tp1Hit=tp1; s.tp2Hit=tp2; s.tp3Hit=tp3;
-  s.slToEntry=slToEntry;
-  s.stopped=stopped;
-  s.closed=tp3;
-  s.active=entered && !stopped && !tp3;
-  s.dailyPips=points;
-  s.monthlyPips=points; // مؤقتًا مطابق لليومي لحين عمل سجل مركزي في Supabase
-  if(!entered){
-    const price=x.last.c;
+    s.active = !s.stopped && !s.closed;
+    s.dailyPips = points;
+    s.monthlyPips = points;
+    s.distance = s.sig==='BUY' ? price-s.entryMid : s.entryMid-price;
+    s.note = s.stopped ? 'تم ضرب الاستوب' : s.closed ? 'تم إغلاق الصفقة' : 'إشارة حية مفعلة';
+  }else{
+    s.active=true;
+    s.triggered=false;
     if(s.sig==='BUY') s.distance = price<s.entryLow ? price-s.entryLow : price>s.entryHigh ? price-s.entryHigh : 0;
     else s.distance = price>s.entryHigh ? s.entryHigh-price : price<s.entryLow ? s.entryLow-price : 0;
-    s.note='لم تدخل المنطقة';
-  }else{
-    s.distance = s.sig==='BUY' ? x.last.c-s.entryMid : s.entryMid-x.last.c;
-    s.note = stopped ? 'تم ضرب الاستوب' : tp3 ? 'تم تحقيق TP3' : 'إشارة مفعلة';
+    s.note='لم تدخل المنطقة بعد';
   }
 
   tradeState[key]=s;

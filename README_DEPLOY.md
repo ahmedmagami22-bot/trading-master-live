@@ -180,3 +180,9 @@ Required before production use:
 - Added cache-buster query param from browser while keeping backend memory cache.
 - Browser fetch uses `cache: no-store`.
 - API response has no-cache headers to avoid stale browser/CDN behavior.
+
+
+## V2.4.3 Reset From Now
+- Prevents historical candles from immediately re-creating TP/SL events after `truncate trade_events`.
+- After reset, the table starts from live/current data only.
+- This helps validate the dashboard from a clean zero state.
