@@ -53,7 +53,7 @@ export default async function handler(req, res) {
     if (!upsert.ok) return res.status(500).json({ ok:false, message:'Save failed', details:await upsert.text() });
   }
 
-  const q = `select=tf,pips,day,month&or=(day.eq.${today},month.eq.${month})`;
+  const q = `select=tf,pips,day,month,event_type,signal_key&or=(day.eq.${today},month.eq.${month})`;
   const r = await fetch(`${supabaseUrl}/rest/v1/trade_events?${q}`, {
     headers:{ apikey:serviceKey, Authorization:`Bearer ${serviceKey}` }
   });
@@ -62,13 +62,20 @@ export default async function handler(req, res) {
   const rows = await r.json();
   const byTf = {};
   const totals = { daily:0, monthly:0 };
+  const winKeys = new Set();
+  const lossKeys = new Set();
   for (const row of rows) {
     const tf = row.tf || 'unknown';
     if (!byTf[tf]) byTf[tf] = { daily:0, monthly:0 };
     const p = Number(row.pips || 0);
     if (row.day === today) { byTf[tf].daily += p; totals.daily += p; }
     if (row.month === month) { byTf[tf].monthly += p; totals.monthly += p; }
+    if (row.event_type === 'WIN_TRADE') winKeys.add(row.signal_key || `${tf}:win`);
+    if (row.event_type === 'LOSS_TRADE') lossKeys.add(row.signal_key || `${tf}:loss`);
   }
+  const wins = winKeys.size;
+  const losses = [...lossKeys].filter(k => !winKeys.has(k)).length;
+  const winRate = wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : 0;
 
-  return res.status(200).json({ ok:true, mode:'central', saved:safeEvents.length, today, month, byTf, totals });
+  return res.status(200).json({ ok:true, mode:'central', saved:safeEvents.length, today, month, byTf, totals, stats:{wins, losses, winRate} });
 }

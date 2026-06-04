@@ -244,3 +244,17 @@ Required before production use:
 - Keeps Supabase login and central PIPS.
 - Keeps Demo Mode disabled.
 - Recommended Vercel env for this version: `TWELVE_CACHE_MS=10000`.
+
+
+## V3.0 Competition Signal Quality Engine
+- Official data source remains Twelve Data XAU/USD.
+- Adds quality scoring target: only signals scoring >= 80% become valid trades.
+- Signal workflow: signal scan -> wave personality -> market regime -> strategy selection -> quality score -> trade management.
+- Three strategy families:
+  1. Trend Quality: EMA 20/50/200 + MACD + FVG/BOS + wave personality.
+  2. Sideway Reversal: Bollinger Bands + RSI + Stochastic + SMC sweeps.
+  3. Squeeze Breakout: Bollinger squeeze + BOS + FVG + MACD momentum.
+- Trade management now uses 3 parts: TP1, TP2, TP3.
+- After TP2 is achieved, Stop Loss is moved to Entry / Break-even.
+- Supabase central stats now include wins, losses, and win rate.
+- This is not a verified one-year backtest result; it is the engine architecture needed before running a formal backtest.

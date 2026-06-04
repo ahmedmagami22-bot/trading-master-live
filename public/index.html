@@ -1365,9 +1365,9 @@ try{
 
 <script>
 try{
-  if(localStorage.getItem('tm_sync_version') !== 'v251'){
+  if(localStorage.getItem('tm_sync_version') !== 'v300'){
     sessionStorage.clear();
-    localStorage.setItem('tm_sync_version','v251');
+    localStorage.setItem('tm_sync_version','v300');
   }
 }catch(e){}
 </script>
@@ -1480,21 +1480,21 @@ try{
   <section class="card fullTableCard">
 
       <section class="card">
-        <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — Stable updates every 15 seconds</h2><small>متابعة لحظية للإشارات والأهداف وصافي النقاط لكل فريم.</small></div></div>
+        <div class="cardHead"><div><h2>Multi-Timeframe Signal Table — V3 Competition Engine</h2><small>فلترة جودة 80%، دخول 3 أجزاء، وبعد TP2 يتم نقل SL إلى نقطة الدخول.</small></div></div>
         <div class="perfTable"><div class="summaryStrip" id="summaryStrip"></div><div class="mtfWrap"><div class="tfGrid" id="tfGrid"></div></div></div>
-        <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. السعر ومناطق الدخول مبنية على Twelve Data Time Series الحقيقي. تم إيقاف الديمو، وفشل Price API لا يوقف الداشبورد.</div>
+        <div class="disclaimer">حساب PIPS: كل 1 دولار في الذهب = 10 PIPS. المصدر الرسمي Twelve Data. الصفقة 3 أجزاء: TP1/TP2/TP3، وبعد تحقق TP2 ينتقل SL إلى Entry. الإشارات الأقل من 80% تظهر انتظار ولا تُعتمد كصفقة.</div>
   </section>
-  <div class="foot">Trading Master • Educational technical dashboard • Not financial advice • Signal Engine</div>
+  <div class="foot">Trading Master • V3 Competition Signal Quality Engine • Educational only</div>
 </div>
 <script>
 const els = id => document.getElementById(id);
 const ALL_TF = [
-  ['5min','5 دقائق'], ['15min','15 15 ثانية'], ['1h','ساعة'], ['4h','4 ساعات'], ['1day','اليوم']
+  ['5min','5 دقائق'], ['15min','15 دقيقة'], ['1h','ساعة'], ['4h','4 ساعات'], ['1day','اليوم']
 ];
 const ENTRY_LIMIT = { '5min':3, '15min':5, '1h':8, '4h':12, '1day':15 };
 let INTERVAL = localStorage.getItem('tm_interval') || '15min';
-const ACTIVE_REFRESH_MS = 15 * 1000;          // V2.5.1 تحديث كل 15 ثانية          // V2.4.8 تحديث مستقر كل 15 ثانية           // V2.4.1 تحديث لحظي تقريبي كل 15 ثانية
-const TABLE_REFRESH_MS = 15 * 1000;           // V2.5.1 تحديث كل الفريمات والجدول كل 15 ثانية           // V2.4.8 تحديث كل الفريمات والجدول كل 15 ثانية            // V2.4.1 تحديث كل الفريمات والجدول كل 15 ثانية
+const ACTIVE_REFRESH_MS = 15 * 1000;          // V3.0 تحديث كل 15 ثانية          // V2.4.8 تحديث مستقر كل 15 ثانية           // V2.4.1 تحديث لحظي تقريبي كل 15 ثانية
+const TABLE_REFRESH_MS = 15 * 1000;           // V3.0 تحديث كل الفريمات والجدول كل 15 ثانية           // V2.4.8 تحديث كل الفريمات والجدول كل 15 ثانية            // V2.4.1 تحديث كل الفريمات والجدول كل 15 ثانية
 const CLIENT_CACHE_MS = 0;                    // لا يوجد كاش محلي                    // لا يوجد كاش محلي                    // V2.4.0 لا يوجد كاش محلي حتى تظهر آخر بيانات من الباك إند
 let candles = [];
 let timer = null;
@@ -1657,36 +1657,164 @@ function ema(arr, len){const k=2/(len+1); let out=[], prev=arr[0];arr.forEach((v
 function rsi(closes, len=14){let out=Array(closes.length).fill(null);for(let i=len;i<closes.length;i++){let gain=0,loss=0;for(let j=i-len+1;j<=i;j++){const d=closes[j]-closes[j-1]; if(d>=0)gain+=d;else loss-=d;}const rs=loss===0?100:gain/loss;out[i]=100-(100/(1+rs));}return out}
 function atr(data,len=14){let trs=[0];for(let i=1;i<data.length;i++){const c=data[i],p=data[i-1];trs.push(Math.max(c.h-c.l,Math.abs(c.h-p.c),Math.abs(c.l-p.c)));}return ema(trs,len)}
 function pivots(data){const last=data[data.length-2]||data[data.length-1];const p=(last.h+last.l+last.c)/3;return{r1:2*p-last.l,s1:2*p-last.h,r2:p+(last.h-last.l),s2:p-(last.h-last.l),r3:last.h+2*(p-last.l),s3:last.l-2*(last.h-p),p}}
+
+function sma(arr, len){
+  let out=Array(arr.length).fill(null), sum=0;
+  for(let i=0;i<arr.length;i++){ sum+=arr[i]; if(i>=len)sum-=arr[i-len]; if(i>=len-1)out[i]=sum/len; }
+  return out;
+}
+function rollingStd(arr, len){
+  const ma=sma(arr,len); let out=Array(arr.length).fill(null);
+  for(let i=len-1;i<arr.length;i++){
+    let v=0; for(let j=i-len+1;j<=i;j++){v+=Math.pow(arr[j]-ma[i],2)}
+    out[i]=Math.sqrt(v/len);
+  }
+  return out;
+}
+function bollinger(closes,len=20,mult=2){
+  const mid=sma(closes,len), sd=rollingStd(closes,len);
+  return {mid, upper:mid.map((v,i)=>v==null?null:v+mult*sd[i]), lower:mid.map((v,i)=>v==null?null:v-mult*sd[i]), width:mid.map((v,i)=>v?((mult*sd[i]*2)/v)*100:null)};
+}
+function stochastic(data,len=14,smooth=3){
+  const k=Array(data.length).fill(null);
+  for(let i=len-1;i<data.length;i++){
+    const part=data.slice(i-len+1,i+1); const hi=Math.max(...part.map(c=>c.h)); const lo=Math.min(...part.map(c=>c.l));
+    k[i]=(hi===lo)?50:((data[i].c-lo)/(hi-lo))*100;
+  }
+  const kk=k.map(v=>v==null?50:v); const d=sma(kk,smooth);
+  return {k,d};
+}
+function macd(closes, fast=12, slow=26, sig=9){
+  const ef=ema(closes,fast), es=ema(closes,slow); const line=closes.map((_,i)=>ef[i]-es[i]); const signal=ema(line,sig); const hist=line.map((v,i)=>v-signal[i]);
+  return {line, signal, hist};
+}
+function lastN(arr,n){return arr.slice(Math.max(0,arr.length-n));}
+function slope(vals){const a=vals.filter(v=>v!=null); if(a.length<2)return 0; return (a.at(-1)-a[0])/(a.length-1);}
+function detectRegime(data, e20, e50, e200, bb, at){
+  const last=data.at(-1), close=last.c, atrv=at.at(-1)||Math.max(1,last.h-last.l);
+  const emaGap=Math.abs((e20.at(-1)||close)-(e50.at(-1)||close));
+  const bbWidth=bb.width.at(-1)||0;
+  const recent=lastN(data,22); const hi=Math.max(...recent.map(c=>c.h)); const lo=Math.min(...recent.map(c=>c.l));
+  const range=hi-lo;
+  const trendUp=close>e200.at(-1) && e20.at(-1)>e50.at(-1) && slope(lastN(e20,8))>0 && emaGap>atrv*.12;
+  const trendDown=close<e200.at(-1) && e20.at(-1)<e50.at(-1) && slope(lastN(e20,8))<0 && emaGap>atrv*.12;
+  const squeeze=bbWidth && bbWidth < 0.38;
+  const sideways=(!trendUp&&!trendDown) || range < atrv*5 || emaGap<atrv*.18;
+  if(squeeze) return {type:'SQUEEZE', ar:'انكماش/انتظار انفجار', strength:Math.round(bbWidth*100)/100};
+  if(trendUp) return {type:'UPTREND', ar:'اتجاه صاعد مؤكد', strength:Math.round((emaGap/atrv)*100)};
+  if(trendDown) return {type:'DOWNTREND', ar:'اتجاه هابط مؤكد', strength:Math.round((emaGap/atrv)*100)};
+  return {type:'SIDEWAY', ar:'اتجاه عرضي', strength:Math.round((range/atrv)*10)/10};
+}
+function detectSMC(data){
+  const bos=detectBOS(data), fvg=detectFVG(data), last=data.at(-1);
+  const recent=data.slice(-18,-1); const hi=Math.max(...recent.map(c=>c.h)); const lo=Math.min(...recent.map(c=>c.l));
+  let sweep='None';
+  if(last.h>hi && last.c<hi) sweep='Liquidity Sweep High';
+  if(last.l<lo && last.c>lo) sweep='Liquidity Sweep Low';
+  return {bos,fvg,sweep};
+}
+function wavePersonality(data, atrVal, bias){
+  const ew=elliottContext(data, atrVal, bias);
+  const closes=data.map(c=>c.c); const roc=(closes.at(-1)-closes.at(-6))/(atrVal||1);
+  let personality='تصحيحية', score=0;
+  if(ew.mode==='Motive' && Math.abs(roc)>1.25){personality='دافعة'; score=15;}
+  else if(ew.mode==='Motive'){personality='دافعة ضعيفة'; score=9;}
+  else if(Math.abs(roc)<0.65){personality='عرضية/تصحيحية'; score=6;}
+  return {...ew, personality, waveScore:score};
+}
+function fibTargets(sig, entry, sl, atrv){
+  const risk=Math.max(Math.abs(entry-sl), atrv*.55, 0.8);
+  if(sig==='BUY') return {tp1:entry+risk*1.0, tp2:entry+risk*1.618, tp3:entry+risk*2.618};
+  if(sig==='SELL') return {tp1:entry-risk*1.0, tp2:entry-risk*1.618, tp3:entry-risk*2.618};
+  return {tp1:entry, tp2:entry, tp3:entry};
+}
+function qualityDecision(parts){
+  let score=0, reasons=[];
+  for(const p of parts){score+=p.points; if(p.note)reasons.push(p.note)}
+  score=Math.max(0,Math.min(100,Math.round(score)));
+  return {score,reasons, valid:score>=80};
+}
+
 function detectBOS(data){const last=data.at(-1);const prev=data.slice(-16,-1);const hi=Math.max(...prev.map(x=>x.h));const lo=Math.min(...prev.map(x=>x.l));if(last.c>hi)return 'Bullish';if(last.c<lo)return 'Bearish';return 'Neutral'}
 function detectFVG(data){for(let i=data.length-1;i>=Math.max(2,data.length-12);i--){const a=data[i-2], c=data[i];if(c.l>a.h)return {type:'Positive',low:a.h,high:c.l};if(c.h<a.l)return {type:'Negative',low:c.h,high:a.l};}return {type:'None',low:null,high:null}}
 function swingPivots(data, atrVal){const threshold=Math.max(atrVal*.7, 1.2);let piv=[{i:0,p:data[0].c,type:'start'}], dir=0, extreme=data[0].c, extremeI=0;for(let i=1;i<data.length;i++){const price=data[i].c;if(dir>=0){if(price>extreme){extreme=price;extremeI=i}if(extreme-price>threshold){piv.push({i:extremeI,p:extreme,type:'H'});dir=-1;extreme=price;extremeI=i}}if(dir<=0){if(price<extreme){extreme=price;extremeI=i}if(price-extreme>threshold){piv.push({i:extremeI,p:extreme,type:'L'});dir=1;extreme=price;extremeI=i}}}piv.push({i:data.length-1,p:data.at(-1).c,type:'last'});return piv.slice(-8)}
 function elliottContext(data, atrVal, bias){const sw=swingPivots(data, atrVal);const legs=Math.max(1, sw.length-1);let wave='--', mode='Corrective';if(bias==='BUY'){wave = legs>=5?'5':String(Math.min(5,legs));mode = legs>=3?'Motive':'Corrective';}else if(bias==='SELL'){wave = legs>=5?'5':String(Math.min(5,legs));mode = legs>=3?'Motive':'Corrective';}else{wave = legs<=3?['A','B','C'][Math.max(0,legs-1)]:'4';mode='Corrective';}return {wave, mode, count:legs, swings:sw}}
 function clampEntry(center, rawWidth, tf){const maxW=ENTRY_LIMIT[tf] || 5;const width=Math.min(Math.max(rawWidth, maxW*.35), maxW);return {low:center-width/2, high:center+width/2, width}}
 function analyzeData(data, tf){
-  const closes=data.map(x=>x.c), e20=ema(closes,20), e50=ema(closes,50), e200=ema(closes,100), rs=rsi(closes,14), at=atr(data,14), pv=pivots(data);
-  const last=data.at(-1), prev=data.at(-2), r=rs.at(-1)||50, a=at.at(-1)||(last.h-last.l), bos=detectBOS(data), fvg=detectFVG(data);
-  let score=50, reasons=[];
-  if(last.c>e20.at(-1)){score+=10;reasons.push('السعر أعلى EMA20')}else{score-=10;reasons.push('السعر أسفل EMA20')}
-  if(e20.at(-1)>e50.at(-1)){score+=12;reasons.push('EMA20 أعلى EMA50')}else{score-=12;reasons.push('EMA20 أسفل EMA50')}
-  if(last.c>e200.at(-1)){score+=8;reasons.push('السعر أعلى EMA200')}else{score-=8;reasons.push('السعر أسفل EMA200')}
-  if(r>55){score+=8;reasons.push('RSI إيجابي')}else if(r<45){score-=8;reasons.push('RSI سلبي')}else reasons.push('RSI محايد');
-  if(bos==='Bullish'){score+=13;reasons.push('BOS صعودي')}else if(bos==='Bearish'){score-=13;reasons.push('BOS هبوطي')}else reasons.push('لا يوجد BOS واضح');
-  if(fvg.type==='Positive'){score+=7;reasons.push('FVG إيجابي')}else if(fvg.type==='Negative'){score-=7;reasons.push('FVG سلبي')}
-  const preBias=score>=58?'BUY':score<=42?'SELL':'WAIT';
-  const ew=elliottContext(data, a, preBias);
-  if(preBias==='BUY' && ew.mode==='Motive'){score+=5;reasons.push(`Elliott Wave ${ew.wave}`)}
-  if(preBias==='SELL' && ew.mode==='Motive'){score-=5;reasons.push(`Elliott Wave ${ew.wave}`)}
-  score=Math.max(0,Math.min(100,Math.round(score)));
-  let bias='محايد', sig='WAIT', color='var(--gold)';
-  if(score>=68 && bos!=='Bearish'){bias='صعودي'; sig='BUY'; color='var(--green)'}
-  else if(score<=32 && bos!=='Bullish'){bias='هبوطي'; sig='SELL'; color='var(--red)'}
-  const center = fvg.type!=='None' ? (fvg.low+fvg.high)/2 : (last.c*0.72 + e20.at(-1)*0.28);
-  const zone = clampEntry(center, Math.max(a*.55, Math.abs(last.c-e20.at(-1))*.65), tf);
-  let tp1,tp2,tp3,sl;
-  if(sig==='BUY'){sl=Math.min(zone.low-a*.55, zone.low-(ENTRY_LIMIT[tf]*.55));tp1=zone.high+a*.9;tp2=zone.high+a*1.55;tp3=zone.high+a*2.25;}
-  else if(sig==='SELL'){sl=Math.max(zone.high+a*.55, zone.high+(ENTRY_LIMIT[tf]*.55));tp1=zone.low-a*.9;tp2=zone.low-a*1.55;tp3=zone.low-a*2.25;}
-  else {sl=last.c;tp1=pv.r1;tp2=pv.r2;tp3=pv.r3;}
-  const result={tf,data,last,prev,e20:e20.at(-1),e50:e50.at(-1),e200:e200.at(-1),r,a,pv,bos,fvg,ew,bias,sig,score,color,zone,tp1,tp2,tp3,sl,reasons,ind:{e20,e50,e200,rs,pv,fvg}};
+  const closes=data.map(x=>x.c), e20=ema(closes,20), e50=ema(closes,50), e200=ema(closes,200), rs=rsi(closes,14), at=atr(data,14), pv=pivots(data);
+  const bb=bollinger(closes,20,2), st=stochastic(data,14,3), mc=macd(closes,12,26,9);
+  const last=data.at(-1), prev=data.at(-2), r=rs.at(-1)||50, a=at.at(-1)||(last.h-last.l);
+  const smc=detectSMC(data), bos=smc.bos, fvg=smc.fvg, regime=detectRegime(data,e20,e50,e200,bb,at);
+  const rawBias = (last.c>e20.at(-1) && e20.at(-1)>e50.at(-1)) ? 'BUY' : (last.c<e20.at(-1) && e20.at(-1)<e50.at(-1)) ? 'SELL' : 'WAIT';
+  const ew=wavePersonality(data, a, rawBias);
+  let sig='WAIT', bias='محايد', color='var(--gold)', strategy='Watch Only';
+  const kNow=st.k.at(-1)||50, dNow=st.d.at(-1)||50, kPrev=st.k.at(-2)||50, dPrev=st.d.at(-2)||50;
+  const macdLine=mc.line.at(-1)||0, macdSig=mc.signal.at(-1)||0, macdHist=mc.hist.at(-1)||0;
+  const bbU=bb.upper.at(-1), bbL=bb.lower.at(-1), bbM=bb.mid.at(-1);
+  const parts=[];
+
+  if(regime.type==='UPTREND'){
+    strategy='Trend Quality BUY';
+    const pullback = last.l <= Math.max(e20.at(-1), e50.at(-1)) + a*.35 || fvg.type==='Positive';
+    const fvgOk = fvg.type==='Positive' || smc.sweep==='Liquidity Sweep Low';
+    parts.push({points:20,note:'الاتجاه صاعد مؤكد'});
+    parts.push({points:ew.personality.includes('دافعة')?18:8,note:'شخصية الموجة: '+ew.personality});
+    parts.push({points:(macdLine>macdSig && macdHist>=0)?17:5,note:'MACD مع الاتجاه'});
+    parts.push({points:(r>42 && r<74)?14:4,note:'RSI مناسب للشراء'});
+    parts.push({points:pullback?15:0,note:pullback?'Pullback/FVG مناسب':'لا يوجد Pullback كافي'});
+    parts.push({points:fvgOk||bos==='Bullish'?16:4,note:'SMC: '+(fvg.type!=='None'?fvg.type:bos)});
+    const q=qualityDecision(parts); if(q.valid){sig='BUY'; bias='صعودي'; color='var(--green)'}
+  }else if(regime.type==='DOWNTREND'){
+    strategy='Trend Quality SELL';
+    const pullback = last.h >= Math.min(e20.at(-1), e50.at(-1)) - a*.35 || fvg.type==='Negative';
+    const fvgOk = fvg.type==='Negative' || smc.sweep==='Liquidity Sweep High';
+    parts.push({points:20,note:'الاتجاه هابط مؤكد'});
+    parts.push({points:ew.personality.includes('دافعة')?18:8,note:'شخصية الموجة: '+ew.personality});
+    parts.push({points:(macdLine<macdSig && macdHist<=0)?17:5,note:'MACD مع الاتجاه'});
+    parts.push({points:(r<58 && r>26)?14:4,note:'RSI مناسب للبيع'});
+    parts.push({points:pullback?15:0,note:pullback?'Pullback/FVG مناسب':'لا يوجد Pullback كافي'});
+    parts.push({points:fvgOk||bos==='Bearish'?16:4,note:'SMC: '+(fvg.type!=='None'?fvg.type:bos)});
+    const q=qualityDecision(parts); if(q.valid){sig='SELL'; bias='هبوطي'; color='var(--red)'}
+  }else if(regime.type==='SIDEWAY'){
+    strategy='Sideway Reversal';
+    const sellZone = bbU && last.h>=bbU-a*.25 && r>62 && kPrev>dPrev && kNow<dNow;
+    const buyZone = bbL && last.l<=bbL+a*.25 && r<38 && kPrev<dPrev && kNow>dNow;
+    parts.push({points:20,note:'السوق عرضي'});
+    parts.push({points:(sellZone||buyZone)?25:0,note:(sellZone||buyZone)?'طرف بولينجر + زخم انعكاسي':'لم يصل لطرف نطاق قوي'});
+    parts.push({points:(smc.sweep!=='None')?20:5,note:'SMC Sweep: '+smc.sweep});
+    parts.push({points:(r>62||r<38)?15:5,note:'RSI طرفي'});
+    parts.push({points:15,note:'استراتيجية جودة قليلة العدد'});
+    const q=qualityDecision(parts); if(q.valid && sellZone){sig='SELL'; bias='هبوطي'; color='var(--red)'} else if(q.valid && buyZone){sig='BUY'; bias='صعودي'; color='var(--green)'}
+  }else if(regime.type==='SQUEEZE'){
+    strategy='Squeeze BOS Breakout';
+    const breakUp = bos==='Bullish' && macdHist>0 && fvg.type!=='Negative';
+    const breakDown = bos==='Bearish' && macdHist<0 && fvg.type!=='Positive';
+    parts.push({points:20,note:'Bollinger Squeeze'});
+    parts.push({points:(breakUp||breakDown)?30:0,note:(breakUp||breakDown)?'BOS بعد الانكماش':'لا يوجد BOS مؤكد'});
+    parts.push({points:(fvg.type!=='None')?18:6,note:'FVG: '+fvg.type});
+    parts.push({points:(Math.abs(macdHist)>0)?15:4,note:'MACD Momentum'});
+    parts.push({points:12,note:'انتظار انفجار سعري عالي الجودة'});
+    const q=qualityDecision(parts); if(q.valid && breakUp){sig='BUY'; bias='صعودي'; color='var(--green)'} else if(q.valid && breakDown){sig='SELL'; bias='هبوطي'; color='var(--red)'}
+  }
+
+  let scoreObj=qualityDecision(parts); let score=scoreObj.score; let reasons=scoreObj.reasons;
+  if(sig==='WAIT'){ bias=regime.ar; color='var(--gold)'; score=Math.min(score,79); reasons.push('تم رفض الصفقة لأن الجودة أقل من 80% أو الشروط غير مكتملة'); }
+
+  const center = fvg.type!=='None' ? (fvg.low+fvg.high)/2 : (sig==='BUY'?Math.min(last.c,e20.at(-1)):sig==='SELL'?Math.max(last.c,e20.at(-1)):last.c);
+  const zone = clampEntry(center, Math.max(a*.35, Math.abs(last.c-e20.at(-1))*.45), tf);
+  let sl,tp1,tp2,tp3;
+  const maxStop = {'5min':5, '15min':7, '1h':10, '4h':15, '1day':20}[tf] || 8;
+  if(sig==='BUY'){
+    sl = Math.max(zone.low-maxStop, Math.min(zone.low-a*.75, last.c-maxStop*.35));
+    const t=fibTargets(sig,(zone.low+zone.high)/2,sl,a); tp1=t.tp1; tp2=t.tp2; tp3=t.tp3;
+  }else if(sig==='SELL'){
+    sl = Math.min(zone.high+maxStop, Math.max(zone.high+a*.75, last.c+maxStop*.35));
+    const t=fibTargets(sig,(zone.low+zone.high)/2,sl,a); tp1=t.tp1; tp2=t.tp2; tp3=t.tp3;
+  }else{ sl=last.c; tp1=pv.r1; tp2=pv.r2; tp3=pv.r3; }
+  const rr = sig==='WAIT'?0:Math.abs(tp2-((zone.low+zone.high)/2))/Math.max(Math.abs(((zone.low+zone.high)/2)-sl),0.01);
+  if(sig!=='WAIT' && rr<1.15){ sig='WAIT'; bias='مرفوضة جودة'; color='var(--gold)'; score=Math.min(score,79); reasons.push('تم رفض الصفقة لأن R/R حتى TP2 ضعيف'); }
+
+  const result={tf,data,last,prev,e20:e20.at(-1),e50:e50.at(-1),e200:e200.at(-1),r,a,pv,bos,fvg,smc,ew,regime,strategy,bias,sig,score,color,zone,tp1,tp2,tp3,sl,rr,reasons,ind:{e20,e50,e200,rs,pv,fvg,bb,st,mc}};
   updateTradeState(result); return result;
 }
 function signalKey(x){
@@ -1710,16 +1838,22 @@ function buildTradeEvents(){
   const month = today.slice(0,7);
   const events = [];
   for (const [tf, s] of Object.entries(tradeState || {})){
-    if(!s || !s.key || s.sig==='WAIT') continue;
+    if(!s || !s.key || s.sig==='WAIT' || !s.triggered) continue;
     const base = { tf, signal_key:s.key, sig:s.sig, day:today, month };
     const add = (type, pips) => events.push({ ...base, event_type:type, event_key:`${tf}:${s.key}:${type}`, pips:Math.round(pips || 0) });
-    if(s.tp1Hit) add('TP1', pip(signedTargetPips(s.sig,s.entryMid,s.tp1)));
-    if(s.tp2Hit) add('TP2', pip(signedTargetPips(s.sig,s.entryMid,s.tp2)));
-    if(s.tp3Hit) add('TP3', pip(signedTargetPips(s.sig,s.entryMid,s.tp3)));
+    const p1 = pip(signedTargetPips(s.sig,s.entryMid,s.tp1));
+    const p2 = pip(signedTargetPips(s.sig,s.entryMid,s.tp2));
+    const p3 = pip(signedTargetPips(s.sig,s.entryMid,s.tp3));
+    const slLoss = pip(signedTargetPips(s.sig,s.entryMid,s.originalSl)); // قيمة جزء واحد عند الستوب الأصلي
+    if(s.tp1Hit) add('TP1_PART', p1);
+    if(s.tp2Hit) add('TP2_PART', p2);
+    if(s.tp3Hit) add('TP3_PART', p3);
     if(s.stopped){
-      const stopPips = s.tp2Hit ? 0 : pip(signedTargetPips(s.sig,s.entryMid,s.sl));
-      add('SL', stopPips);
+      if(s.tp2Hit){ add('BE_AFTER_TP2', 0); add('WIN_TRADE', 0); }
+      else if(s.tp1Hit){ add('SL_REMAINING_2_PARTS', slLoss*2); add('LOSS_TRADE', 0); }
+      else { add('SL_3_PARTS', slLoss*3); add('LOSS_TRADE', 0); }
     }
+    if(s.tp3Hit || s.tp2Hit) add('WIN_TRADE', 0);
   }
   return events;
 }
@@ -1760,65 +1894,45 @@ function createSignalState(x, prev={}){
 }
 function updateTradeState(x){
   const key=x.tf;
-  const s = createSignalState(x, {});
-  s.day = new Date().toISOString().slice(0,10);
-  s.month = s.day.slice(0,7);
-  s.dailyPips = 0;
-  s.monthlyPips = 0;
+  let prev = tradeState[key];
+  const nextKey = signalKey(x);
 
   if(x.sig==='WAIT'){
-    s.active=false;
-    s.sig='WAIT';
-    s.key=signalKey(x);
-    s.distance=0;
-    s.note='لا توجد إشارة نشطة';
-    tradeState[key]=s;
-    return;
+    if(prev && prev.triggered && !prev.closed && !prev.stopped){
+      // لا نلغي صفقة مفتوحة لمجرد أن الإشارة الجديدة أصبحت انتظار.
+      tradeState[key]=prev; return;
+    }
+    const s=createSignalState(x, {}); s.active=false; s.sig='WAIT'; s.key=nextKey; s.note='لا توجد صفقة بجودة 80%'; tradeState[key]=s; return;
   }
 
-  // V2.4.3:
-  // لا نحسب أي TP/SL من شموع قديمة بعد التصفير.
-  // نراقب فقط آخر شمعة/السعر الحالي من لحظة فتح الداشبورد، حتى يبدأ الصافي من الصفر فعلًا.
-  const c = x.last;
-  const high = c.h, low = c.l, price = c.c;
+  let s = (prev && prev.key===nextKey) ? prev : createSignalState(x, prev||{});
+  s.day = new Date().toISOString().slice(0,10); s.month = s.day.slice(0,7);
+  const c=x.last, high=c.h, low=c.l, price=c.c;
+  const hitEntry = s.sig==='BUY' ? (low<=s.entryHigh && high>=s.entryLow) : (high>=s.entryLow && low<=s.entryHigh);
 
-  const hitEntry = s.sig==='BUY'
-    ? (low<=s.entryHigh && high>=s.entryLow)
-    : (high>=s.entryLow && low<=s.entryHigh);
-
-  let points = 0;
-
-  if(hitEntry){
-    s.triggered=true;
-    s.triggeredAt=Date.now();
-    s.note='تم تفعيل الإشارة من البيانات الحية الحالية';
-
+  if(hitEntry || s.triggered){
+    s.triggered=true; if(!s.triggeredAt)s.triggeredAt=Date.now();
+    s.note='إشارة Competition مفعّلة — 3 أجزاء';
+    const activeSl = s.tp2Hit ? s.entryMid : s.sl;
     if(s.sig==='BUY'){
-      if(high>=s.tp1){ s.tp1Hit=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp1)); }
-      if(high>=s.tp2){ s.tp2Hit=true; s.slToEntry=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp2)); }
-      if(high>=s.tp3){ s.tp3Hit=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp3)); s.closed=true; }
-      const activeSl = s.tp2Hit ? s.entryMid : s.sl;
-      if(!s.tp3Hit && low<=activeSl){ s.stopped=true; if(!s.tp2Hit) points += pip(signedTargetPips(s.sig,s.entryMid,activeSl)); }
-    }else if(s.sig==='SELL'){
-      if(low<=s.tp1){ s.tp1Hit=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp1)); }
-      if(low<=s.tp2){ s.tp2Hit=true; s.slToEntry=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp2)); }
-      if(low<=s.tp3){ s.tp3Hit=true; points += pip(signedTargetPips(s.sig,s.entryMid,s.tp3)); s.closed=true; }
-      const activeSl = s.tp2Hit ? s.entryMid : s.sl;
-      if(!s.tp3Hit && high>=activeSl){ s.stopped=true; if(!s.tp2Hit) points += pip(signedTargetPips(s.sig,s.entryMid,activeSl)); }
+      if(high>=s.tp1) s.tp1Hit=true;
+      if(high>=s.tp2){ s.tp2Hit=true; s.slToEntry=true; s.sl=s.entryMid; }
+      if(high>=s.tp3){ s.tp3Hit=true; s.closed=true; s.closedAt=Date.now(); }
+      if(!s.tp3Hit && low<=activeSl){ s.stopped=true; s.active=false; s.note=s.tp2Hit?'ضرب BE بعد TP2':'تم ضرب وقف الخسارة'; }
+    }else{
+      if(low<=s.tp1) s.tp1Hit=true;
+      if(low<=s.tp2){ s.tp2Hit=true; s.slToEntry=true; s.sl=s.entryMid; }
+      if(low<=s.tp3){ s.tp3Hit=true; s.closed=true; s.closedAt=Date.now(); }
+      if(!s.tp3Hit && high>=activeSl){ s.stopped=true; s.active=false; s.note=s.tp2Hit?'ضرب BE بعد TP2':'تم ضرب وقف الخسارة'; }
     }
     s.active = !s.stopped && !s.closed;
-    s.dailyPips = points;
-    s.monthlyPips = points;
     s.distance = s.sig==='BUY' ? price-s.entryMid : s.entryMid-price;
-    s.note = s.stopped ? 'تم ضرب الاستوب' : s.closed ? 'تم إغلاق الصفقة' : 'إشارة حية مفعلة';
+    if(s.closed) s.note='تم تحقيق TP3 وإغلاق الصفقة بالكامل';
   }else{
-    s.active=true;
-    s.triggered=false;
-    if(s.sig==='BUY') s.distance = price<s.entryLow ? price-s.entryLow : price>s.entryHigh ? price-s.entryHigh : 0;
-    else s.distance = price>s.entryHigh ? s.entryHigh-price : price<s.entryLow ? s.entryLow-price : 0;
-    s.note='لم تدخل المنطقة بعد';
+    s.active=true; s.triggered=false;
+    s.distance = s.sig==='BUY' ? (price<s.entryLow ? price-s.entryLow : price>s.entryHigh ? price-s.entryHigh : 0) : (price>s.entryHigh ? s.entryHigh-price : price<s.entryLow ? s.entryLow-price : 0);
+    s.note='إشارة مؤهلة تنتظر دخول السعر إلى المنطقة';
   }
-
   tradeState[key]=s;
 }
 function displayStateFor(x){
@@ -1884,17 +1998,20 @@ function updateChartLabels(x){
 
 function renderSummary(){
   const strip=els('summaryStrip'); if(!strip)return;
-  const states=ALL_TF.map(([tf])=>tradeState[tf]||{});
-  const activeSignals=states.filter(s=>s.active&&s.triggered&&!s.closed&&!s.stopped).length;
-  const waitingSignals=states.filter(s=>s.active&&!s.triggered&&!s.closed&&!s.stopped).length;
-  const tpHits=states.reduce((a,s)=>a+(s.tp1Hit?1:0)+(s.tp2Hit?1:0)+(s.tp3Hit?1:0),0);
-  const daily=centralPips?.totals?.daily ?? states.reduce((a,s)=>a+(s.dailyPips||0),0);
-  const monthly=centralPips?.totals?.monthly ?? states.reduce((a,s)=>a+(s.monthlyPips||0),0);
+  const vals=Object.values(tradeState||{});
+  const activeSignals=vals.filter(s=>s && s.triggered && !s.closed && !s.stopped).length;
+  const waitingSignals=vals.filter(s=>s && s.active && !s.triggered && s.sig!=='WAIT').length;
+  const tpHits=vals.reduce((a,s)=>a+(s.tp1Hit?1:0)+(s.tp2Hit?1:0)+(s.tp3Hit?1:0),0);
+  const daily=centralPips?.totals?.daily ?? vals.reduce((a,s)=>a+(s.dailyPips||0),0);
+  const monthly=centralPips?.totals?.monthly ?? vals.reduce((a,s)=>a+(s.monthlyPips||0),0);
+  const wins=centralPips?.stats?.wins ?? vals.filter(s=>s && (s.tp2Hit||s.tp3Hit)).length;
+  const losses=centralPips?.stats?.losses ?? vals.filter(s=>s && s.stopped && !s.tp2Hit).length;
+  const wr=(wins+losses)>0?Math.round((wins/(wins+losses))*100):0;
   const card=(label,value,cls='')=>`<div class="summaryCard"><div class="label">${label}</div><div class="value ${cls}">${value}</div></div>`;
   strip.innerHTML=[
     card('الإشارات النشطة',activeSignals,activeSignals?'green':'gold'),
-    card('إشارات تنتظر الدخول',waitingSignals,waitingSignals?'gold':''),
-    card('الأهداف المحققة',tpHits,tpHits?'green':''),
+    card('Win Rate',`${wr}%`,wr>=80?'green':wr?'gold':''),
+    card('رابحة / خاسرة',`${wins} / ${losses}`,wins>=losses?'green':'red'),
     card('صافي اليوم PIPS',`${daily>=0?'+':''}${daily}`,daily>=0?'green':'red'),
     card('صافي الشهر PIPS',`${monthly>=0?'+':''}${monthly}`,monthly>=0?'green':'red')
   ].join('');
@@ -1905,7 +2022,7 @@ function renderTfTable(){
   const labels=ALL_TF.map(([tf,label])=>label);
   const cell=(html,cls='')=>`<div class="mtfCell ${cls}">${html}</div>`;
   const yes=v=>`<span class="check ${v?'green':'red'}">${v?'✓':'×'}</span>`;
-  const sigLabel=tf=>{const x=tfResults[tf],s=tradeState[tf]||{};if(!x)return'--';const sig=s.sig&&s.sig!=='WAIT'?s.sig:x.sig;const ar=sig==='BUY'?'شراء':sig==='SELL'?'بيع':'لا توجد';const cls=sig==='BUY'?'green':sig==='SELL'?'red':'gold';let note=s.triggered?'مفعّلة':(sig==='WAIT'?'انتظار':'لم تدخل المنطقة');if(s.closed)note='مغلقة TP3';if(s.stopped)note='Stop';return`<span class="mtfVal ${cls}">${ar}</span><span class="stateNote">${note}</span>`};
+  const sigLabel=tf=>{const x=tfResults[tf],s=tradeState[tf]||{};if(!x)return'--';const sig=s.sig&&s.sig!=='WAIT'?s.sig:x.sig;const ar=sig==='BUY'?'شراء':sig==='SELL'?'بيع':'لا توجد';const cls=sig==='BUY'?'green':sig==='SELL'?'red':'gold';let note=s.triggered?'مفعّلة':(sig==='WAIT'?'مرفوضة/انتظار':'لم تدخل المنطقة');if(s.closed)note='مغلقة TP3';if(s.stopped)note=s.tp2Hit?'BE بعد TP2':'Stop';return`<span class="mtfVal ${cls}">${ar}</span><span class="stateNote">${note}</span>${x.score?`<span class="stateNote">Quality ${x.score}% • ${x.strategy||''}</span>`:''}`};
   const distance=tf=>{const s=tradeState[tf]||{};return s.distance!==undefined?`<span class="mtfVal ${(s.distance||0)>=0?'green':'red'}">${(s.distance>=0?'+':'')+fmt(s.distance)}$</span>`:'--'};
   const daily=tf=>{const s=tradeState[tf]||{},v=(centralPips?.byTf?.[tf]?.daily ?? s.dailyPips ?? 0);return`<span class="mtfVal ${v>=0?'green':'red'}">${v>=0?'+':''}${v}</span>`};
   const monthly=tf=>{const s=tradeState[tf]||{},v=(centralPips?.byTf?.[tf]?.monthly ?? s.monthlyPips ?? 0);return`<span class="mtfVal ${v>=0?'green':'red'}">${v>=0?'+':''}${v}</span>`};
@@ -1920,6 +2037,7 @@ function renderTfTable(){
   html+=row('تحقق TP2',tf=>yes((tradeState[tf]||{}).tp2Hit));
   html+=row('تحقق TP3',tf=>yes((tradeState[tf]||{}).tp3Hit));
   html+=row('ضرب الاستوب',tf=>yes((tradeState[tf]||{}).stopped));
+  html+=row('نقل SL للدخول',tf=>yes((tradeState[tf]||{}).slToEntry));
   html+=row('صافي اليوم PIPS',daily);
   html+=row('صافي الشهر PIPS',monthly);
   html+='</div>';grid.innerHTML=html;
